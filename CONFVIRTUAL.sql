@@ -40,8 +40,8 @@ CREATE TABLE UTENTE(
                         ImgLogo BLOB,
                         Data date NOT NULL,
 						Nome varchar(30) NOT NULL,
-                        Svolgimento ENUM("Attiva", "Completata") DEFAULT "Attiva"
-						/*primary key(Acronimo, AnnoEdizione)*/);
+                        Svolgimento ENUM("Attiva", "Completata") DEFAULT "Attiva",
+						primary key(Acronimo, AnnoEdizione));
  
  CREATE TABLE SPONSORIZZAZIONE(
 							  NomeSponsor varchar(30),

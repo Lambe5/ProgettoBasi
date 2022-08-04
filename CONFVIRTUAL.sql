@@ -82,10 +82,10 @@ CREATE TABLE PROGRAMMA_GIORNALIERO(
 ) ENGINE = INNODB;
  
 CREATE TABLE SESSIONE(
-		IdProgramma 	 varchar(10) NOT NULL references PROGRAMMA_GIORNALIERO(Id),
 		Codice 			 varchar(10)   primary key,
+		IdProgramma 	 varchar(10) NOT NULL references PROGRAMMA_GIORNALIERO(Id),
 		LinkTeams 		 varchar(100),
-		Numpresentazioni int DEFAULT 0,
+		NumPresentazioni int DEFAULT 0,
 		OraFine 		 time,
 		OraIni 			 time,
 		Titolo 			 varchar(100)
@@ -246,27 +246,74 @@ CREATE TABLE PRESENTAZIONE_TUTORIAL(
         
 ) ENGINE = INNODB;
 
-#Store procedure 1 --> crea Conferenza
+#insert di prova per testare la creazione di una sessione
+INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome)
+ values ("Acronimo1",2022,"img1","Conferenza1");
+ 
+INSERT INTO PROGRAMMA_GIORNALIERO (Id, AcronimoConferenza, AnnoEdizioneConferenza, Data)
+ values ("007","Acronimo1",2022,"2022-08-15");
+
+
+#Lista stored procedure
+/********************************************************************************************************************************/
+#Stored procedure 1 --> crea Conferenza
 start transaction;
-delimiter //
+delimiter |
 CREATE PROCEDURE CreaConferenza(IN Acronimo varchar(30), IN AnnoEdizione YEAR, IN ImgLogo BLOB, IN Nome varchar(30))
 begin
 insert into CONFERENZA set Acronimo = Acronimo, AnnoEdizione = AnnoEdizione, ImgLogo = ImgLogo, Nome = Nome;
 end;
-// delimiter ;
+| delimiter ;
 commit;
 
-#Store procedure 1 --> crea Sessione
+#Stored procedure 2 --> crea Sessione
 start transaction;
-delimiter //
-CREATE PROCEDURE CreaSessione(IN IdProgramma varchar(10), IN Codice varchar(10), IN LinkTeams varchar(100), IN OraIni time, IN OraFine time, IN Titolo varchar(100))
+delimiter |
+CREATE PROCEDURE CreaSessione(IN Codice varchar(10), IN IdProgramma varchar(10),  IN LinkTeams varchar(100), IN OraIni time, IN OraFine time, IN Titolo varchar(100))
 begin
-insert into CONFERENZA set Acronimo = Acronimo, AnnoEdizione = AnnoEdizione, ImgLogo = ImgLogo, Nome = Nome;
-end;
-// delimiter ;
+#Controlla che esista un id uguale nella tabella PROGRAMMA_GIORNALIERO
+#Controlla che OraIni sia < di OraFine
+if(OraIni < OraFine
+   &&(SELECT count(PROGRAMMA_GIORNALIERO.Id) FROM PROGRAMMA_GIORNALIERO WHERE PROGRAMMA_GIORNALIERO.Id = IdProgramma) > 0) then
+insert into SESSIONE set Codice = Codice, IdProgramma = IdProgramma, LinkTeams = LinkTeams, OraIni = OraIni, OraFine = OraFine, Titolo = Titolo;
 commit;
+else rollback;
+end if;
+end;
+| delimiter ;
+
+#Stored procedure 3 --> crea Presentazione
+start transaction;
+delimiter |
+CREATE PROCEDURE CreaPresentazione(Codice varchar(10), CodiceSessione varchar(10), NumSequenza int, OraFine time, OraIni time)
+begin
+
+#controlla che il codice sessione esista nella tabella Sessione
+if((SELECT count(SESSIONE.Codice) FROM SESSIONE WHERE (SESSIONE.Codice = CodiceSessione) AND (OraFine <= SESSIONE.OraFine) AND (OraIni >= SESSIONE.OraIni)) > 0
+	&& OraIni < OraFine) then
+    insert into PRESENTAZIONE set Codice = Codice, CodiceSessione = CodiceSessione, NumSequenza = NumSequenza, OraFine = OraFine, OraIni = OraIni;
+commit;
+else rollback;
+end if;
+end;
+| delimiter ;
+/********************************************************************************************************************************/
  
  
+ #Lista dei trigger
+/********************************************************************************************************************************/
+#Trigger1 --> Aggiorna il numero di presentazioni dentro la tabella SESSIONE
+delimiter |
+CREATE TRIGGER AggiornaNumeroPresentazioni
+after insert on PRESENTAZIONE
+for each row
+begin
+update SESSIONE
+set SESSIONE.NumPresentazioni =  SESSIONE.NumPresentazioni + 1
+where SESSIONE.Codice = NEW.CodiceSessione;
+end;
+| delimiter ;
+/********************************************************************************************************************************/ 
 
  
  

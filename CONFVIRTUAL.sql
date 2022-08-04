@@ -287,7 +287,6 @@ start transaction;
 delimiter |
 CREATE PROCEDURE CreaPresentazione(Codice varchar(10), CodiceSessione varchar(10), NumSequenza int, OraFine time, OraIni time)
 begin
-
 #controlla che il codice sessione esista nella tabella Sessione
 if((SELECT count(SESSIONE.Codice) FROM SESSIONE WHERE (SESSIONE.Codice = CodiceSessione) AND (OraFine <= SESSIONE.OraFine) AND (OraIni >= SESSIONE.OraIni)) > 0
 	&& OraIni < OraFine) then
@@ -315,5 +314,15 @@ end;
 | delimiter ;
 /********************************************************************************************************************************/ 
 
+
+#Lista delle view
+/********************************************************************************************************************************/ 
+delimiter |
+CREATE VIEW CONFERENZE_DISPONIBILI(Acronimo, Nome, ImgLogo, AnnoEdizione)
+AS SELECT Acronimo, Nome, ImgLogo, AnnoEdizione
+FROM CONFERENZA
+WHERE (Svolgimento = "Attiva")
+| delimiter ;
+/********************************************************************************************************************************/ 
  
  

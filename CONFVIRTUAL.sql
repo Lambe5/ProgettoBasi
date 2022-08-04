@@ -51,7 +51,6 @@ CREATE TABLE CONFERENZA(
 		Acronimo 	 varchar(30),
 		AnnoEdizione YEAR,
 		ImgLogo 	 BLOB,
-		Data 		 date 		 NOT NULL,
 		Nome 		 varchar(30) NOT NULL,
 		Svolgimento  ENUM("Attiva", "Completata") DEFAULT "Attiva",
 		
@@ -73,20 +72,20 @@ CREATE TABLE SPONSORIZZAZIONE(
 ) ENGINE = INNODB;
  
 CREATE TABLE PROGRAMMA_GIORNALIERO(
-		AcronimoConferenza varchar(30),
+		Id varchar(10), 
+		AcronimoConferenza varchar(30) references CONFERENZA(Acronimo),
+        AnnoEdizioneConferenza varchar(30) references CONFERENZA(AnnoEdizione),
 		Data 			   date,
 		
-        primary key(AcronimoConferenza, Data), 
-		
-        foreign key(AcronimoConferenza) references CONFERENZA(Acronimo)
-        
+        primary key(Id)
+		        
 ) ENGINE = INNODB;
  
 CREATE TABLE SESSIONE(
-		DataProgramma 	 date NOT NULL references PROGRAMMA_GIORNALIERO(Data),
+		IdProgramma 	 varchar(10) NOT NULL references PROGRAMMA_GIORNALIERO(Id),
 		Codice 			 varchar(10)   primary key,
 		LinkTeams 		 varchar(100),
-		Numpresentazioni int,
+		Numpresentazioni int DEFAULT 0,
 		OraFine 		 time,
 		OraIni 			 time,
 		Titolo 			 varchar(100)
@@ -246,7 +245,26 @@ CREATE TABLE PRESENTAZIONE_TUTORIAL(
         foreign key(CodiceTutorial, CodiceSessioneTutorial) references TUTORIAL(CodicePresentazione, CodiceSessionePresentazione)
         
 ) ENGINE = INNODB;
- 
+
+#Store procedure 1 --> crea Conferenza
+start transaction;
+delimiter //
+CREATE PROCEDURE CreaConferenza(IN Acronimo varchar(30), IN AnnoEdizione YEAR, IN ImgLogo BLOB, IN Nome varchar(30))
+begin
+insert into CONFERENZA set Acronimo = Acronimo, AnnoEdizione = AnnoEdizione, ImgLogo = ImgLogo, Nome = Nome;
+end;
+// delimiter ;
+commit;
+
+#Store procedure 1 --> crea Sessione
+start transaction;
+delimiter //
+CREATE PROCEDURE CreaSessione(IN IdProgramma varchar(10), IN Codice varchar(10), IN LinkTeams varchar(100), IN OraIni time, IN OraFine time, IN Titolo varchar(100))
+begin
+insert into CONFERENZA set Acronimo = Acronimo, AnnoEdizione = AnnoEdizione, ImgLogo = ImgLogo, Nome = Nome;
+end;
+// delimiter ;
+commit;
  
  
 

@@ -2,6 +2,8 @@ DROP DATABASE IF EXISTS CONFVIRTUAL;
 CREATE DATABASE CONFVIRTUAL;
 USE CONFVIRTUAL;
 
+SET GLOBAL event_scheduler = ON;
+
 CREATE TABLE UTENTE(
 		Username 	 varchar(30) primary key,
         Password 	 varchar(30),
@@ -260,9 +262,9 @@ INSERT INTO PROGRAMMA_GIORNALIERO (Id, AcronimoConferenza, AnnoEdizioneConferenz
 start transaction;
 delimiter |
 CREATE PROCEDURE CreaConferenza(IN Acronimo varchar(30), IN AnnoEdizione YEAR, IN ImgLogo BLOB, IN Nome varchar(30))
-begin
-insert into CONFERENZA set Acronimo = Acronimo, AnnoEdizione = AnnoEdizione, ImgLogo = ImgLogo, Nome = Nome;
-end;
+	BEGIN
+			INSERT INTO CONFERENZA SET Acronimo = Acronimo, AnnoEdizione = AnnoEdizione, ImgLogo = ImgLogo, Nome = Nome;
+	END;
 | delimiter ;
 commit;
 
@@ -270,59 +272,102 @@ commit;
 start transaction;
 delimiter |
 CREATE PROCEDURE CreaSessione(IN Codice varchar(10), IN IdProgramma varchar(10),  IN LinkTeams varchar(100), IN OraIni time, IN OraFine time, IN Titolo varchar(100))
-begin
-#Controlla che esista un id uguale nella tabella PROGRAMMA_GIORNALIERO
-#Controlla che OraIni sia < di OraFine
-if(OraIni < OraFine
-   &&(SELECT count(PROGRAMMA_GIORNALIERO.Id) FROM PROGRAMMA_GIORNALIERO WHERE PROGRAMMA_GIORNALIERO.Id = IdProgramma) > 0) then
-insert into SESSIONE set Codice = Codice, IdProgramma = IdProgramma, LinkTeams = LinkTeams, OraIni = OraIni, OraFine = OraFine, Titolo = Titolo;
-commit;
-else rollback;
-end if;
-end;
+	begin
+	#Controlla che esista un id uguale nella tabella PROGRAMMA_GIORNALIERO
+	#Controlla che OraIni sia < di OraFine
+		IF(OraIni < OraFine &&(SELECT count(PROGRAMMA_GIORNALIERO.Id) 
+								 FROM PROGRAMMA_GIORNALIERO 
+								WHERE PROGRAMMA_GIORNALIERO.Id = IdProgramma) > 0)
+		THEN
+			INSERT INTO SESSIONE 
+			SET Codice = Codice, IdProgramma = IdProgramma, LinkTeams = LinkTeams, OraIni = OraIni, OraFine = OraFine, Titolo = Titolo;
+			COMMIT;
+		ELSE ROLLBACK;
+		END IF;
+	END;
 | delimiter ;
 
 #Stored procedure 3 --> crea Presentazione
 start transaction;
 delimiter |
 CREATE PROCEDURE CreaPresentazione(Codice varchar(10), CodiceSessione varchar(10), NumSequenza int, OraFine time, OraIni time)
-begin
-#controlla che il codice sessione esista nella tabella Sessione
-if((SELECT count(SESSIONE.Codice) FROM SESSIONE WHERE (SESSIONE.Codice = CodiceSessione) AND (OraFine <= SESSIONE.OraFine) AND (OraIni >= SESSIONE.OraIni)) > 0
-	&& OraIni < OraFine) then
-    insert into PRESENTAZIONE set Codice = Codice, CodiceSessione = CodiceSessione, NumSequenza = NumSequenza, OraFine = OraFine, OraIni = OraIni;
-commit;
-else rollback;
-end if;
-end;
+	begin
+		#controlla che il codice sessione esista nella tabella Sessione
+		IF((SELECT count(SESSIONE.Codice) 
+			  FROM SESSIONE 
+			 WHERE (SESSIONE.Codice = CodiceSessione) 
+					AND (OraFine <= SESSIONE.OraFine) 
+					AND (OraIni >= SESSIONE.OraIni)) > 0 && OraIni < OraFine)
+		THEN
+			INSERT INTO PRESENTAZIONE 
+            SET Codice = Codice, CodiceSessione = CodiceSessione, NumSequenza = NumSequenza, OraFine = OraFine, OraIni = OraInim;
+			COMMIT;
+		ELSE ROLLBACK;
+		END IF;
+	END;
 | delimiter ;
 /********************************************************************************************************************************/
  
+ #DA TESTARE
+ # Stored procedure 4 --> associa speaker - tutorial
+ start transaction;
+delimiter |
+CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varchar(10), CodiceSessioneTutorial varchar(10))
+	BEGIN
+		#Ci vuole il controllo se esiste gia l'associazione??
+        INSERT INTO PRESENTAZIONE_SPEAKER
+        SET UsernameSpeaker = UsernameSpeaker, CodiceTutorial = CodiceTutorial, CodiceSessioneTutorial = CodiceSessioneTutorial;
+        COMMIT;
+    END
+ | delimiter ;
  
  #Lista dei trigger
 /********************************************************************************************************************************/
-#Trigger1 --> Aggiorna il numero di presentazioni dentro la tabella SESSIONE
+#Trigger 2 --> Aggiorna il numero di presentazioni dentro la tabella SESSIONE
 delimiter |
 CREATE TRIGGER AggiornaNumeroPresentazioni
-after insert on PRESENTAZIONE
-for each row
-begin
-update SESSIONE
-set SESSIONE.NumPresentazioni =  SESSIONE.NumPresentazioni + 1
-where SESSIONE.Codice = NEW.CodiceSessione;
-end;
+		 AFTER INSERT ON PRESENTAZIONE
+  FOR EACH ROW
+		 BEGIN
+				UPDATE SESSIONE
+				   SET SESSIONE.NumPresentazioni =  SESSIONE.NumPresentazioni + 1
+				 WHERE SESSIONE.Codice = NEW.CodiceSessione;
+		   END;
 | delimiter ;
 /********************************************************************************************************************************/ 
+
+#DA TESTARE
+# trigger 1 : setta stato svolgimento a "Coperto" quando viene associato un Presenter ad un Articolo
+delimiter |
+CREATE TRIGGER CambiaStatoSvolgimento
+		 AFTER INSERT ON ARTICOLO
+  FOR EACH ROW
+		 BEGIN
+				UPDATE ARTICOLO
+				   SET StatoSvolgimento = "Coperto"
+				 WHERE UsernamePresenter is not null;
+		   END;
+| delimiter ;
 
 
 #Lista delle view
 /********************************************************************************************************************************/ 
+#View che restituisce le conferenze disponibili
 delimiter |
-CREATE VIEW CONFERENZE_DISPONIBILI(Acronimo, Nome, ImgLogo, AnnoEdizione)
-AS SELECT Acronimo, Nome, ImgLogo, AnnoEdizione
-FROM CONFERENZA
-WHERE (Svolgimento = "Attiva")
+CREATE VIEW CONFERENZE_DISPONIBILI(Acronimo, Nome, ImgLogo, AnnoEdizione) AS
+	 SELECT Acronimo, Nome, ImgLogo, AnnoEdizione
+	   FROM CONFERENZA
+	  WHERE (Svolgimento = "Attiva")
 | delimiter ;
 /********************************************************************************************************************************/ 
  
- 
+#DA TESTARE
+# evento: setta svolgimento della conferenza a "Completata" dopo la scadenza
+delimiter |
+CREATE EVENT ModificaSvolgimento
+ON SCHEDULE EVERY 24 HOUR
+DO
+	UPDATE CONFERENZA, PROGRAMMA_GIORNALIERO
+	   SET CONFERENZA.Svolgimento = "Completata"
+	 WHERE now() >= PROGRAMMA_GIORNALIERO.Data;
+| delimiter ;

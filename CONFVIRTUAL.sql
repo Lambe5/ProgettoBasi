@@ -255,6 +255,15 @@ INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome)
 INSERT INTO PROGRAMMA_GIORNALIERO (Id, AcronimoConferenza, AnnoEdizioneConferenza, Data)
  values ("007","Acronimo1",2022,"2022-08-15");
 
+INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) values ("CiccioSp", "123", "Ciccio", "Pasticcio", "Bologna", "2000-10-10");
+
+INSERT INTO SPEAKER (UsernameUtente, NomeUni, NomeDip, CV, Foto) values ("CiccioSp", "Unibo", "Informatica", "Sono bravo a esporre", "imgCiccio");
+
+INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) values ("A123", "007", "link1", "11:00", "9:00", "titolo1");
+
+INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) values ("P125", "A123", 3, "11:00", "9:00"); 
+
+INSERT INTO TUTORIAL (CodicePresentazione, CodiceSessionePresentazione, Titolo, Abstract) values ("P125", "A123", "Come fare schifo", "hwqvouq");
 
 #Lista stored procedure
 /********************************************************************************************************************************/
@@ -308,16 +317,18 @@ CREATE PROCEDURE CreaPresentazione(Codice varchar(10), CodiceSessione varchar(10
 | delimiter ;
 /********************************************************************************************************************************/
  
- #DA TESTARE
  # Stored procedure 4 --> associa speaker - tutorial
  start transaction;
 delimiter |
 CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varchar(10), CodiceSessioneTutorial varchar(10))
 	BEGIN
 		#Ci vuole il controllo se esiste gia l'associazione??
-        INSERT INTO PRESENTAZIONE_SPEAKER
+        #ci vuole il controllo per vedere se esiste quello speaker tra gli utenti
+        if(SELECT count(SPEAKER.UsernameUtente) FROM SPEAKER WHERE SPEAKER.UsernameUtente = UsernameSpeaker) > 0 THEN
+        INSERT INTO PRESENTAZIONE_TUTORIAL
         SET UsernameSpeaker = UsernameSpeaker, CodiceTutorial = CodiceTutorial, CodiceSessioneTutorial = CodiceSessioneTutorial;
         COMMIT;
+        end if;
     END
  | delimiter ;
  
@@ -361,7 +372,7 @@ CREATE VIEW CONFERENZE_DISPONIBILI(Acronimo, Nome, ImgLogo, AnnoEdizione) AS
 | delimiter ;
 /********************************************************************************************************************************/ 
  
-#DA TESTARE
+
 # evento: setta svolgimento della conferenza a "Completata" dopo la scadenza
 delimiter |
 CREATE EVENT ModificaSvolgimento

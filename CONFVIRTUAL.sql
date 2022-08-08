@@ -265,6 +265,8 @@ INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni)
 
 INSERT INTO TUTORIAL (CodicePresentazione, CodiceSessionePresentazione, Titolo, Abstract) values ("P125", "A123", "Come fare schifo", "hwqvouq");
 
+INSERT INTO INFO_AGGIUNTIVE (UsernameSpeaker, CodiceTutorial, CodiceSessioneTutorial, LinkWeb, Descrizione) values ("CiccioSp", "P125", "A123", "link1", "descrizione1");
+
 #Lista stored procedure
 /********************************************************************************************************************************/
 #Stored procedure 1 --> crea Conferenza
@@ -315,8 +317,7 @@ CREATE PROCEDURE CreaPresentazione(Codice varchar(10), CodiceSessione varchar(10
 		END IF;
 	END;
 | delimiter ;
-/********************************************************************************************************************************/
- 
+
  # Stored procedure 4 --> associa speaker - tutorial
  start transaction;
 delimiter |
@@ -324,13 +325,202 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
 	BEGIN
 		#Ci vuole il controllo se esiste gia l'associazione??
         #ci vuole il controllo per vedere se esiste quello speaker tra gli utenti
-        if(SELECT count(SPEAKER.UsernameUtente) FROM SPEAKER WHERE SPEAKER.UsernameUtente = UsernameSpeaker) > 0 THEN
+		if(SELECT count(SPEAKER.UsernameUtente) FROM SPEAKER WHERE SPEAKER.UsernameUtente = UsernameSpeaker) > 0 THEN
         INSERT INTO PRESENTAZIONE_TUTORIAL
         SET UsernameSpeaker = UsernameSpeaker, CodiceTutorial = CodiceTutorial, CodiceSessioneTutorial = CodiceSessioneTutorial;
         COMMIT;
         end if;
     END
  | delimiter ;
+ 
+ # Stored procedure 5 --> crea Utente, utile per la registrazione di un nuovo utente
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE CreaUtente(Username varchar(30), Password varchar(30), Nome varchar(30), Cognome varchar(30), LuogoNascita varchar(30), DataNascita Date)
+	BEGIN
+    INSERT INTO UTENTE SET  Username = Username, Password = Password, Nome = Nome, Cognome = Cognome, LuogoNascita = LuogoNascita, DataNascita = DataNascita;
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure 6 --> crea Speaker
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE CreaSpeaker(UsernameUtente varchar(30), NomeUni varchar(30), NomeDip varchar(30), CV varchar(30), Foto BLOB)
+	BEGIN
+    if(SELECT count(UTENTE.Username) FROM UTENTE WHERE UTENTE.Username = UsernameUtente) > 0 THEN
+    INSERT INTO SPEAKER SET  UsernameUtente = UsernameUtente, NomeUni = NomeUni, NomeDip = NomeDip, CV = CV, Foto = Foto;
+    COMMIT;
+    end if;
+    END
+| delimiter ;
+
+# Stored procedure 6 --> crea Presenter
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE CreaPresenter(UsernameUtente varchar(30), NomeUni varchar(30), NomeDip varchar(30), CV varchar(30), Foto BLOB)
+	BEGIN
+    if(SELECT count(UTENTE.Username) FROM UTENTE WHERE UTENTE.Username = UsernameUtente) > 0 THEN
+    INSERT INTO PRESENTER SET  UsernameUtente = UsernameUtente, NomeUni = NomeUni, NomeDip = NomeDip, CV = CV, Foto = Foto;
+    COMMIT;
+    end if;
+    END
+| delimiter ;
+
+# Stored procedure 7 --> modifica CV da parte dello speaker
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE ModificaCVSpeaker(UsernameUtente varchar(30), CV varchar(30))
+	BEGIN
+    #if(SELECT count(UTENTE.Username) FROM UTENTE WHERE UTENTE.Username = UsernameUtente) > 0 THEN
+    UPDATE SPEAKER 
+    SET CV = CV
+    WHERE (SPEAKER.UsernameUtente = UsernameUtente);
+    COMMIT;
+    #end if;
+    END
+| delimiter ;
+
+# Stored procedure 8 --> modifica Foto da parte dello speaker
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE ModificaFotoSpeaker(UsernameUtente varchar(30), Foto BLOB)
+	BEGIN
+    #if(SELECT count(UTENTE.Username) FROM UTENTE WHERE UTENTE.Username = UsernameUtente) > 0 THEN
+    UPDATE SPEAKER 
+    SET Foto = Foto
+    WHERE (SPEAKER.UsernameUtente = UsernameUtente);
+    COMMIT;
+    #end if;
+    END
+| delimiter ;
+
+# Stored procedure 9 --> modifica affiliazione universitaria da parte dello speaker
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE ModificaAffiliazioneSpeaker(UsernameUtente varchar(30), NomeUni varchar(30), NomeDip varchar(30))
+	BEGIN
+    #if(SELECT count(UTENTE.Username) FROM UTENTE WHERE UTENTE.Username = UsernameUtente) > 0 THEN
+    UPDATE SPEAKER 
+    SET NomeUni = NomeUni, NomeDip = NomeDip
+    WHERE (SPEAKER.UsernameUtente = UsernameUtente);
+    COMMIT;
+    #end if;
+    END
+| delimiter ;
+
+# Stored procedure 10 --> modifica CV da parte del presenter
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE ModificaCVPresenter(UsernameUtente varchar(30), CV varchar(30))
+	BEGIN
+    #if(SELECT count(UTENTE.Username) FROM UTENTE WHERE UTENTE.Username = UsernameUtente) > 0 THEN
+    UPDATE PRESENTER 
+    SET CV = CV
+    WHERE (PRESENTER.UsernameUtente = UsernameUtente);
+    COMMIT;
+    #end if;
+    END
+| delimiter ;
+
+# Stored procedure 11 --> modifica Foto da parte del presenter
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE ModificaFotoPresenter(UsernameUtente varchar(30), Foto BLOB)
+	BEGIN
+    #if(SELECT count(UTENTE.Username) FROM UTENTE WHERE UTENTE.Username = UsernameUtente) > 0 THEN
+    UPDATE PRESENTER 
+    SET Foto = Foto
+    WHERE (PRESENTER.UsernameUtente = UsernameUtente);
+    COMMIT;
+    #end if;
+    END
+| delimiter ;
+
+# Stored procedure 12 --> modifica affiliazione universitaria da parte del presenter
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE ModificaAffiliazionePresenter(UsernameUtente varchar(30), NomeUni varchar(30), NomeDip varchar(30))
+	BEGIN
+    #if(SELECT count(UTENTE.Username) FROM UTENTE WHERE UTENTE.Username = UsernameUtente) > 0 THEN
+    UPDATE PRESENTER 
+    SET NomeUni = NomeUni, NomeDip = NomeDip
+    WHERE (PRESENTER.UsernameUtente = UsernameUtente);
+    COMMIT;
+    #end if;
+    END
+| delimiter ;
+
+# Stored procedure 13 --> creazione di un tutorial
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE CreaTutorial(CodicePresentazione varchar(10), CodiceSessionePresentazione varchar(10), Titolo varchar(100), Abstract varchar(500))
+	BEGIN
+    INSERT INTO TUTORIAL 
+    SET CodicePresentazione = CodicePresentazione, CodiceSessionePresentazione = CodiceSessionePresentazione, Titolo = Titolo, Abstract = Abstract;
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure 14 --> crea info aggiuntive
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE CreaInfoAggiuntive(UsernameSpeaker varchar(30), CodiceTutorial varchar(10), CodiceSessioneTutorial varchar(10), LinkWeb varchar(100), Descrizione varchar(500))
+	BEGIN
+    INSERT INTO INFO_AGGIUNTIVE 
+    SET UsernameSpeaker = UsernameSpeaker, CodiceTutorial = CodiceTutorial, CodiceSessioneTutorial = CodiceSessioneTutorial, LinkWeb = LinkWeb, Descrizione = Descrizione;
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure 15 --> inserisci o modifica il link in info_aggiuntive
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE ModificaLinkInfoAggiuntive(UsernameSpeaker varchar(30), CodiceTutorial varchar(10), CodiceSessioneTutorial varchar(10), LinkWeb varchar(100))
+	BEGIN
+    UPDATE INFO_AGGIUNTIVE 
+    SET LinkWeb = LinkWeb
+    WHERE (INFO_AGGIUNTIVE.UsernameSpeaker = UsernameSpeaker) AND (INFO_AGGIUNTIVE.CodiceTutorial = CodiceTutorial) AND (INFO_AGGIUNTIVE.CodiceSessioneTutorial = CodiceSessioneTutorial);
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure 16 --> inserisci o modifica la descrizione in info_aggiuntive
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE ModificaDescrizioneInfoAggiuntive(UsernameSpeaker varchar(30), CodiceTutorial varchar(10), CodiceSessioneTutorial varchar(10), Descrizione varchar(500))
+	BEGIN
+    UPDATE INFO_AGGIUNTIVE 
+    SET Descrizione = Descrizione
+    WHERE (INFO_AGGIUNTIVE.UsernameSpeaker = UsernameSpeaker) AND (INFO_AGGIUNTIVE.CodiceTutorial = CodiceTutorial) AND (INFO_AGGIUNTIVE.CodiceSessioneTutorial = CodiceSessioneTutorial);
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure 17 --> registrazione a una conferenza
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE RegistrazioneConferenza(UsernameUtente varchar(30), AcronimoConferenza varchar(30), AnnoEdizioneConferenza YEAR)
+	BEGIN
+    INSERT INTO REGISTRAZIONE 
+    SET UsernameUtente = UsernameUtente, AcronimoConferenza = AcronimoConferenza, AnnoEdizioneConferenza = AnnoEdizioneConferenza;
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure 18 --> inserimento lista presentazioni favorite
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE InserisciPresentazionePreferitaInLista(UsernameUtente varchar(30), CodicePresentazione varchar(10), CodiceSessionePresentazione varchar(10))
+	BEGIN
+    INSERT INTO LISTA_PRESENTAZIONI_FAVORITE 
+    SET UsernameUtente = UsernameUtente, CodicePresentazione = CodicePresentazione, CodiceSessionePresentazione = CodiceSessionePresentazione;
+    COMMIT;
+    END
+| delimiter ;
+/********************************************************************************************************************************/
+ 
+
  
  #Lista dei trigger
 /********************************************************************************************************************************/
@@ -369,6 +559,37 @@ CREATE VIEW CONFERENZE_DISPONIBILI(Acronimo, Nome, ImgLogo, AnnoEdizione) AS
 	 SELECT Acronimo, Nome, ImgLogo, AnnoEdizione
 	   FROM CONFERENZA
 	  WHERE (Svolgimento = "Attiva")
+| delimiter ;
+
+#View che restituisce il numero totale delle conferenze attive
+delimiter |
+CREATE VIEW ConferenzeAttive(TotConferenzeAttive) AS
+	 SELECT count(Acronimo)
+	 FROM CONFERENZA
+     WHERE (Svolgimento = "Attiva")
+| delimiter ;
+
+#View che restituisce il numero totale degli utenti registrati
+delimiter |
+CREATE VIEW UtentiRegistrati(TotUtenti) AS
+	 SELECT count(Username)
+	 FROM UTENTE
+| delimiter ;
+
+#View che restituisce tutte le sessioni presenti
+delimiter |
+CREATE VIEW SessioniPresenti(Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) AS
+	 SELECT Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo
+	 FROM SESSIONE
+| delimiter ;
+
+#NON VA BENE
+#View che restituisce la lista delle presentazioni preferite
+delimiter |
+CREATE VIEW VisualizzaLIstaConferenzeFavo(CodicePresentazione, CodiceSessionePresentazione) AS
+	 SELECT CodicePresentazione, CodiceSessionePresentazione
+	 FROM LISTA_PRESENTAZIONI_FAVORITE
+     WHERE (LISTA_PRESENTAZIONI_FAVORITE.UsernameUtente = UsernameUtente);
 | delimiter ;
 /********************************************************************************************************************************/ 
  

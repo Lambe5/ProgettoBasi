@@ -127,7 +127,7 @@ CREATE TABLE PRESENTAZIONE(
 		Numpagine 		    		int,
 		filePDF 		    		BLOB,
 		Titolo 			    		varchar(100),
-		StatoSvolgimento    		ENUM("Coperto", "NonCoperto") DEFAULT "Coperto",
+		StatoSvolgimento    		ENUM("Coperto", "NonCoperto") DEFAULT "NonCoperto",
 		UsernamePresenter   		varchar(30),
         
 		primary key(CodicePresentazione, CodiceSessionePresentazione),
@@ -263,14 +263,17 @@ INSERT INTO SPEAKER (UsernameUtente, NomeUni, NomeDip, CV, Foto) values ("Ciccio
 
 INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) values ("A123", "007", "link1", "11:00", "9:00", "titolo1");
 INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) values ("A125", "007", "link2", "11:00", "9:00", "titolo2");
+INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) values ("A200", "007", "link2", "11:00", "9:00", "titolo2");
 
 INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) values ("P125", "A123", 3, "11:00", "9:00"); 
-INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) values ("P128", "A125", 2, "12:00", "8:00"); 
-
-INSERT INTO ARTICOLO(CodicePresentazione,CodiceSessionePresentazione,Numpagine,filePDF,Titolo,StatoSvolgimento) 
-values ("P128","A125",150,"meme1","Essere o non essere?","NonCoperto");
+-- INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) values ("P128", "A125", 2, "12:00", "8:00"); 
 
 INSERT INTO PRESENTER (UsernameUtente,NomeUni,NomeDip,CV,Foto) values ("CiccioSp","UniSBO","Scienze","Non sono bello ma rappo","meme1");
+
+-- INSERT INTO ARTICOLO(CodicePresentazione,CodiceSessionePresentazione,Numpagine,filePDF,Titolo,StatoSvolgimento,UsernamePresenter) 
+-- values ("P128","A125",150,"meme1","Essere o non essere?","NonCoperto",null);
+
+-- UPDATE ARTICOLO SET UsernamePresenter='CiccioSp' WHERE CodicePresentazione='P128';
 
 INSERT INTO TUTORIAL (CodicePresentazione, CodiceSessionePresentazione, Titolo, Abstract) values ("P125", "A123", "Come fare schifo", "hwqvouq");
 
@@ -331,7 +334,7 @@ CREATE PROCEDURE CreaPresentazione(Codice varchar(10), CodiceSessione varchar(10
 					AND (OraIni >= SESSIONE.OraIni)) > 0 && OraIni < OraFine)
 		THEN
 			INSERT INTO PRESENTAZIONE 
-            SET Codice = Codice, CodiceSessione = CodiceSessione, NumSequenza = NumSequenza, OraFine = OraFine, OraIni = OraInim;
+            SET Codice = Codice, CodiceSessione = CodiceSessione, NumSequenza = NumSequenza, OraFine = OraFine, OraIni = OraIni;
 			COMMIT;
 		ELSE ROLLBACK;
 		END IF;
@@ -545,8 +548,28 @@ END
     COMMIT;
     END
 | delimiter ;
+#Store Procedure 21 --> Crea Articolo
+start transaction;
 
-# Stored procedure 21 --> inserimento lista presentazioni favorite
+delimiter |
+CREATE PROCEDURE CreaArticolo(CodicePresentazione varchar(10),CodiceSessionePresentazione varchar(10),
+ Numpagine int(11), filePDF blob, Titolo varchar(100),StatoSvolgimento enum('Coperto','NonCoperto'),UsernamePresenter varchar(30))
+ BEGIN
+ if(SELECT count(CodicePresentazione) FROM PRESENTAZIONE WHERE ((CodicePresentazione=CodicePresentazione) 
+and (CodiceSessionePresentazione=CodiceSessionePresentazione))>0) then
+INSERT INTO ARTICOLO
+ SET CodicePresentazione=CodicePresentazione,
+	CodiceSessionePresentazione=CodiceSessionePresentazione,
+    Numpagine=Numpagine,
+    filePDF=filePDF,
+    Titolo=Titolo,
+    StatoSvolgimento=StatoSvolgimento,
+    UsernamePresenter=UsernamePresenter;
+    COMMIT;
+end if;
+ END
+| delimiter;
+# Stored procedure 22 --> inserimento lista presentazioni favorite
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciPresentazionePreferitaInLista(UsernameUtente varchar(30), CodicePresentazione varchar(10), CodiceSessionePresentazione varchar(10))
@@ -557,7 +580,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure 22 --> inserimento sponsor
+# Stored procedure 23 --> inserimento sponsor
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciSponsor(Nome varchar(30), ImgLogo BLOB)
@@ -568,7 +591,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure 23 --> inserimento sponsorizzazione
+# Stored procedure 24 --> inserimento sponsorizzazione
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciSponsorizzazione(NomeSponsor varchar(30), AcronimoConferenza varchar(30), AnnoEdizioneConferenza YEAR, Importo float)
@@ -579,7 +602,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure 24 --> inserimento autore e associa a lista autori
+# Stored procedure 25 --> inserimento autore e associa a lista autori
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciAutore(ID int, Nome varchar(30), Cognome varchar(30), CodiceArticolo varchar(10), CodiceSessioneArticolo varchar(10))
@@ -592,7 +615,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure 25 --> inserimento admin
+# Stored procedure 26 --> inserimento admin
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciAmministratore(UsernameUtente varchar(30))
@@ -603,7 +626,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure 26 --> inserimento messaggio
+# Stored procedure 27 --> inserimento messaggio
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciMessaggio(CodiceSessione varchar(10), Timestamp float, UsernameUtente varchar(30), Testo varchar(500), DataInserimento date)
@@ -614,7 +637,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure 27 --> inserimento valutazione
+# Stored procedure 28 --> inserimento valutazione
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciValutazione(UsernameAmministratore varchar(30), CodicePresentazione varchar(10), CodiceSessionePresentazione varchar(10), Voto int, Note varchar(50))
@@ -625,7 +648,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure 28 --> inserimento parola chiave
+# Stored procedure 29 --> inserimento parola chiave
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciParolaChiave(CodiceArticolo varchar(10), Parola varchar(20))
@@ -655,18 +678,17 @@ CREATE TRIGGER AggiornaNumeroPresentazioni
 /********************************************************************************************************************************/ 
 
 #DA TESTARE
-DROP TRIGGER IF EXISTS CambiaStatoSvolgimento;
+#DROP TRIGGER IF EXISTS CambiaStatoSvolgimento;
 #NON FUNZIONANTE
 # trigger 2 : setta stato svolgimento a "Coperto" quando viene associato un Presenter ad un Articolo
 delimiter |
-CREATE TRIGGER CambiaStatoSvolgimento
-		 AFTER UPDATE ON ARTICOLO
+CREATE TRIGGER CambiaStatoSvolgimento AFTER INSERT ON ARTICOLO
   FOR EACH ROW
-		 BEGIN
+  BEGIN
 				UPDATE ARTICOLO
 				   SET StatoSvolgimento = "Coperto"
 				 WHERE UsernamePresenter is not null;
-		   END;
+  END
 | delimiter ;
 
 

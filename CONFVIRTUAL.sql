@@ -68,15 +68,15 @@ CREATE TABLE SPONSORIZZAZIONE(
 		
         primary key(NomeSponsor, AcronimoConferenza, AnnoEdizioneConferenza),
 		
-        foreign key(AcronimoConferenza, AnnoEdizioneConferenza) references CONFERENZA(Acronimo, AnnoEdizione),
-		foreign key(NomeSponsor) references SPONSOR(Nome)
+        foreign key(AcronimoConferenza, AnnoEdizioneConferenza) references CONFERENZA(Acronimo, AnnoEdizione) on delete cascade,
+		foreign key(NomeSponsor) references SPONSOR(Nome) on delete cascade
         
 ) ENGINE = INNODB;
  
 CREATE TABLE PROGRAMMA_GIORNALIERO(
 		Id varchar(10), 
-		AcronimoConferenza varchar(30) references CONFERENZA(Acronimo),
-        AnnoEdizioneConferenza varchar(30) references CONFERENZA(AnnoEdizione),
+		AcronimoConferenza varchar(30) references CONFERENZA(Acronimo) on delete cascade,
+        AnnoEdizioneConferenza varchar(30) references CONFERENZA(AnnoEdizione) on delete cascade,
 		Data 			   date,
 		
         primary key(Id)
@@ -85,7 +85,7 @@ CREATE TABLE PROGRAMMA_GIORNALIERO(
  
 CREATE TABLE SESSIONE(
 		Codice 			 varchar(10)   primary key,
-		IdProgramma 	 varchar(10) NOT NULL references PROGRAMMA_GIORNALIERO(Id),
+		IdProgramma 	 varchar(10) NOT NULL references PROGRAMMA_GIORNALIERO(Id) on delete cascade,
 		LinkTeams 		 varchar(100),
 		NumPresentazioni int DEFAULT 0,
 		OraFine 		 time,
@@ -103,8 +103,8 @@ CREATE TABLE MESSAGGIO(
 		
         primary key (CodiceSessione, Timestamp),
         
-        foreign key(CodiceSessione) references SESSIONE(Codice),
-        foreign key(UsernameUtente) references UTENTE(Username)
+        foreign key(CodiceSessione) references SESSIONE(Codice) on delete cascade,
+        foreign key(UsernameUtente) references UTENTE(Username) on delete cascade
         
 ) ENGINE = INNODB;
  
@@ -117,7 +117,7 @@ CREATE TABLE PRESENTAZIONE(
 		
         primary key(Codice, CodiceSessione),
         
-        foreign key(CodiceSessione) references SESSIONE(Codice)
+        foreign key(CodiceSessione) references SESSIONE(Codice) on delete cascade
         
 ) ENGINE = INNODB;
  
@@ -132,8 +132,8 @@ CREATE TABLE PRESENTAZIONE(
         
 		primary key(CodicePresentazione, CodiceSessionePresentazione),
         
-        foreign key(CodicePresentazione, CodiceSessionePresentazione) references PRESENTAZIONE(Codice, CodiceSessione),
-        foreign key(UsernamePresenter) references PRESENTER(UsernameUtente)
+        foreign key(CodicePresentazione, CodiceSessionePresentazione) references PRESENTAZIONE(Codice, CodiceSessione) on delete cascade,
+        foreign key(UsernamePresenter) references PRESENTER(UsernameUtente) on delete cascade
         
 ) ENGINE = INNODB;
  
@@ -145,7 +145,7 @@ CREATE TABLE TUTORIAL(
 		
         primary key(CodicePresentazione, CodiceSessionePresentazione),
 		
-        foreign key(CodicePresentazione, CodiceSessionePresentazione) references PRESENTAZIONE(Codice, CodiceSessione)
+        foreign key(CodicePresentazione, CodiceSessionePresentazione) references PRESENTAZIONE(Codice, CodiceSessione) on delete cascade
 ) ENGINE = INNODB; 
  
 CREATE TABLE AUTORE(
@@ -161,14 +161,15 @@ CREATE TABLE LISTA_AUTORI(
         
 		primary key(IdAutore, CodiceArticolo, CodiceSessioneArticolo),
         
-		foreign key(CodiceArticolo, CodiceSessioneArticolo) references ARTICOLO(CodicePresentazione, CodiceSessionePresentazione), 
-		foreign key(IdAutore) references AUTORE(ID)
+		foreign key(CodiceArticolo, CodiceSessioneArticolo) references ARTICOLO(CodicePresentazione, CodiceSessionePresentazione) on delete cascade, 
+		foreign key(IdAutore) references AUTORE(ID) on delete cascade
         
 ) ENGINE = INNODB;
  
 CREATE TABLE PAROLA_CHIAVE(
-		CodiceArticolo varchar(10) primary key references ARTICOLO(Codice),
-		Parola 		   varchar(20)
+		CodiceArticolo varchar(10) references ARTICOLO(Codice) on delete cascade,
+		Parola 		   varchar(20), 
+        primary key(CodiceArticolo, Parola)
         
 ) ENGINE = INNODB;
  
@@ -179,8 +180,8 @@ CREATE TABLE LISTA_PRESENTAZIONI_FAVORITE(
 		
         primary key(UsernameUtente, CodicePresentazione, CodiceSessionePresentazione), 
 		
-        foreign key(UsernameUtente) references UTENTE(Username),
-        foreign key(CodicePresentazione, CodiceSessionePresentazione) references PRESENTAZIONE(Codice, CodiceSessione)
+        foreign key(UsernameUtente) references UTENTE(Username) on delete cascade,
+        foreign key(CodicePresentazione, CodiceSessionePresentazione) references PRESENTAZIONE(Codice, CodiceSessione) on delete cascade
         
 ) ENGINE = INNODB;
  
@@ -191,8 +192,8 @@ CREATE TABLE REGISTRAZIONE(
 		
         primary key(UsernameUtente, AcronimoConferenza, AnnoEdizioneConferenza), 
 		
-        foreign key(UsernameUtente) references UTENTE(Username),
-        foreign key(AcronimoConferenza, AnnoEdizioneConferenza) references CONFERENZA(Acronimo, AnnoEdizione)
+        foreign key(UsernameUtente) references UTENTE(Username) on delete cascade,
+        foreign key(AcronimoConferenza, AnnoEdizioneConferenza) references CONFERENZA(Acronimo, AnnoEdizione) on delete cascade
 
 ) ENGINE = INNODB;
 
@@ -203,8 +204,8 @@ CREATE TABLE CREAZIONE(
 		
         primary key(UsernameAmministratore, AcronimoConferenza, AnnoEdizioneConferenza),
         
-		foreign key(UsernameAmministratore) references AMMINISTRATORE(UsernameUtente),
-        foreign key(AcronimoConferenza, AnnoEdizioneConferenza) references CONFERENZA(Acronimo, AnnoEdizione)
+		foreign key(UsernameAmministratore) references AMMINISTRATORE(UsernameUtente) on delete cascade,
+        foreign key(AcronimoConferenza, AnnoEdizioneConferenza) references CONFERENZA(Acronimo, AnnoEdizione) on delete cascade
         
 ) ENGINE = INNODB;
  
@@ -217,8 +218,8 @@ CREATE TABLE VALUTAZIONE(
 		
         primary key(UsernameAmministratore, CodicePresentazione, CodiceSessionePresentazione), 
 		
-        foreign key(CodicePresentazione, CodiceSessionePresentazione) references PRESENTAZIONE(Codice, CodiceSessione), 
-		foreign key(UsernameAmministratore) references AMMINISTRATORE(UsernameUtente)
+        foreign key(CodicePresentazione, CodiceSessionePresentazione) references PRESENTAZIONE(Codice, CodiceSessione) on delete cascade, 
+		foreign key(UsernameAmministratore) references AMMINISTRATORE(UsernameUtente) on delete cascade
         
 ) ENGINE = INNODB; 
  
@@ -231,8 +232,8 @@ CREATE TABLE VALUTAZIONE(
         
 		primary key(UsernameSpeaker, CodiceTutorial, CodiceSessioneTutorial),
         
-        foreign key(UsernameSpeaker) references SPEAKER(UsernameUtente),
-		foreign key(CodiceTutorial, CodiceSessioneTutorial) references TUTORIAL(CodicePresentazione, CodiceSessionePresentazione)
+        foreign key(UsernameSpeaker) references SPEAKER(UsernameUtente) on delete cascade,
+		foreign key(CodiceTutorial, CodiceSessioneTutorial) references TUTORIAL(CodicePresentazione, CodiceSessionePresentazione) on delete cascade
         
 ) ENGINE = INNODB;
  
@@ -243,8 +244,8 @@ CREATE TABLE PRESENTAZIONE_TUTORIAL(
 		
         primary key(UsernameSpeaker, CodiceTutorial, CodiceSessioneTutorial),
         
-		foreign key(UsernameSpeaker) references SPEAKER(UsernameUtente),
-        foreign key(CodiceTutorial, CodiceSessioneTutorial) references TUTORIAL(CodicePresentazione, CodiceSessionePresentazione)
+		foreign key(UsernameSpeaker) references SPEAKER(UsernameUtente) on delete cascade,
+        foreign key(CodiceTutorial, CodiceSessioneTutorial) references TUTORIAL(CodicePresentazione, CodiceSessionePresentazione) on delete cascade
         
 ) ENGINE = INNODB;
 
@@ -269,15 +270,26 @@ INSERT INTO INFO_AGGIUNTIVE (UsernameSpeaker, CodiceTutorial, CodiceSessioneTuto
 
 #Lista stored procedure
 /********************************************************************************************************************************/
-#Stored procedure 1 --> crea Conferenza
+#Stored procedure 1 --> crea Conferenza e associa l'admin
 start transaction;
 delimiter |
-CREATE PROCEDURE CreaConferenza(IN Acronimo varchar(30), IN AnnoEdizione YEAR, IN ImgLogo BLOB, IN Nome varchar(30))
+CREATE PROCEDURE CreaConferenza(IN Acronimo varchar(30), IN AnnoEdizione YEAR, IN ImgLogo BLOB, IN Nome varchar(30), UsernameAdmin varchar(30))
 	BEGIN
 			INSERT INTO CONFERENZA SET Acronimo = Acronimo, AnnoEdizione = AnnoEdizione, ImgLogo = ImgLogo, Nome = Nome;
+            INSERT INTO CREAZIONE SET UsernameAmministratore = UsernameAdmin, AcronimoConferenza = Acronimo, AnnoEdizioneConferenza = AnnoEdizione;
 	END;
 | delimiter ;
 commit;
+
+#Stored procedure --> crea programma_giornaliero
+start transaction;
+ delimiter |
+ CREATE PROCEDURE CreaProgrammaGiornaliero(Id varchar(10), AcronimoConferenza varchar(30), AnnoEdizioneConferenza varchar(30), Data date)
+	BEGIN
+    INSERT INTO PROGRAMMA_GIORNALIERO SET  Id = Id, AcronimoConferenza = AcronimoConferenza, AnnoEdizioneConferenza = AnnoEdizioneConferenza;
+    COMMIT;
+    END
+| delimiter ;
 
 #Stored procedure 2 --> crea Sessione
 start transaction;
@@ -515,6 +527,85 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
 	BEGIN
     INSERT INTO LISTA_PRESENTAZIONI_FAVORITE 
     SET UsernameUtente = UsernameUtente, CodicePresentazione = CodicePresentazione, CodiceSessionePresentazione = CodiceSessionePresentazione;
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure --> inserimento sponsor
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE InserisciSponsor(Nome varchar(30), ImgLogo BLOB)
+	BEGIN
+    INSERT INTO SPONSOR
+    SET Nome = Nome, ImgLogo = ImgLogo;
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure --> inserimento sponsorizzazione
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE InserisciSponsorizzazione(NomeSponsor varchar(30), AcronimoConferenza varchar(30), AnnoEdizioneConferenza YEAR, Importo float)
+	BEGIN
+    INSERT INTO SPONSORIZZAZIONE
+    SET NomeSponsor = NomeSponsor, AcronimoConferenza = AcronimoConferenza, AnnoEdizioneConferenza = AnnoEdizioneConferenza, Importo = Importo;
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure --> inserimento autore e associa a lista autori
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE InserisciAutore(ID int, Nome varchar(30), Cognome varchar(30), CodiceArticolo varchar(10), CodiceSessioneArticolo varchar(10))
+	BEGIN
+    INSERT INTO AUTORE
+    SET ID = ID, Nome = Nome, Cognome = Cognome;
+    INSERT INTO LISTA_AUTORI
+    SET IdAutore = ID, CodiceArticolo = CodiceArticolo, CodiceSessioneArticolo = CodiceSessioneArticolo;
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure --> inserimento admin
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE InserisciAmministratore(UsernameUtente varchar(30))
+	BEGIN
+    INSERT INTO AMMINISTRATORE
+    SET UsernameUtente = UsernameUtente;
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure --> inserimento messaggio
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE InserisciMessaggio(CodiceSessione varchar(10), Timestamp float, UsernameUtente varchar(30), Testo varchar(500), DataInserimento date)
+	BEGIN
+    INSERT INTO MESSAGGIO
+    SET CodiceSessione = CodiceSessione, Timestamp = Timestamp, UsernameUtente = UsernameUtente, Testo = Testo, DataInserimento = DataInserimento;
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure --> inserimento valutazione
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE InserisciValutazione(UsernameAmministratore varchar(30), CodicePresentazione varchar(10), CodiceSessionePresentazione varchar(10), Voto int, Note varchar(50))
+	BEGIN
+    INSERT INTO VALUTAZIONE
+    SET UsernameAmministratore = UsernameAmministratore, CodicePresentazione = CodicePresentazione, CodiceSessionePresentazione = CodiceSessionePresentazione, Voto = Voto, Note = Note;
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure --> inserimento parola chiave
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE InserisciParolaChiave(CodiceArticolo varchar(10), Parola varchar(20))
+	BEGIN
+    INSERT INTO PAROLA_CHIAVE
+    SET CodiceArticolo = CodiceArticolo, Parola = Parola;
     COMMIT;
     END
 | delimiter ;

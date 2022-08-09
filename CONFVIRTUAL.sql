@@ -357,22 +357,22 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
  | delimiter ;
  /********************************************************************************************************************************/
  #Stored procedure 6 --> Associa un presenter alla presentazione di un articolo
-start transaction;
-delimiter |
-CREATE PROCEDURE AssociaPresenter(CodicePresentazione varchar(10),CodiceSessionePresentazione varchar(10),UsernamePresenter varchar(30))
-BEGIN
-if((SELECT count(ARTICOLO.CodicePresentazione) FROM ARTICOLO WHERE 
-((ARTICOLO.CodicePresentazione=CodicePresentazione) and (ARTICOLO.CodiceSessionePresentazione=CodiceSessionePresentazione)))>0 AND 
-(SELECT count(PRESENTER.UsernameUtente) FROM PRESENTER WHERE (PRESENTER.UsernameUtente=UsernamePresenter))>0 ) THEN
-UPDATE ARTICOLO
-SET 
-UsernamePresenter=UsernamePresenter
-WHERE
-CodicePresentazione=CodicePresentazione AND CodiceSessionePresentazione=CodiceSessionePresentazione;
-COMMIT;
-end if;
-END  
-|delimiter;
+-- start transaction;
+-- delimiter |
+-- CREATE PROCEDURE AssociaPresenter(CodicePresentazione varchar(10),CodiceSessionePresentazione varchar(10),UsernamePresenter varchar(30))
+-- BEGIN
+-- if((SELECT count(ARTICOLO.CodicePresentazione) FROM ARTICOLO WHERE 
+-- ((ARTICOLO.CodicePresentazione=CodicePresentazione) and (ARTICOLO.CodiceSessionePresentazione=CodiceSessionePresentazione)))>0 AND 
+-- (SELECT count(PRESENTER.UsernameUtente) FROM PRESENTER WHERE (PRESENTER.UsernameUtente=UsernamePresenter))>0 ) THEN
+-- UPDATE ARTICOLO
+-- SET 
+-- UsernamePresenter=UsernamePresenter
+-- WHERE
+-- CodicePresentazione=CodicePresentazione AND CodiceSessionePresentazione=CodiceSessionePresentazione;
+-- COMMIT;
+-- end if;
+-- END  
+-- |delimiter;
  
  # Stored procedure 7 --> crea Utente, utile per la registrazione di un nuovo utente
  start transaction;
@@ -550,7 +550,6 @@ END
 | delimiter ;
 #Store Procedure 21 --> Crea Articolo
 start transaction;
-
 delimiter |
 CREATE PROCEDURE CreaArticolo(CodicePresentazione varchar(10),CodiceSessionePresentazione varchar(10),
  Numpagine int(11), filePDF blob, Titolo varchar(100),StatoSvolgimento enum('Coperto','NonCoperto'),UsernamePresenter varchar(30))
@@ -678,16 +677,16 @@ CREATE TRIGGER AggiornaNumeroPresentazioni
 /********************************************************************************************************************************/ 
 
 #DA TESTARE
-#DROP TRIGGER IF EXISTS CambiaStatoSvolgimento;
+DROP TRIGGER IF EXISTS CambiaStatoSvolgimento;
 #NON FUNZIONANTE
 # trigger 2 : setta stato svolgimento a "Coperto" quando viene associato un Presenter ad un Articolo
 delimiter |
-CREATE TRIGGER CambiaStatoSvolgimento AFTER INSERT ON ARTICOLO
+CREATE TRIGGER CambiaStatoSvolgimento BEFORE INSERT ON ARTICOLO
   FOR EACH ROW
   BEGIN
-				UPDATE ARTICOLO
-				   SET StatoSvolgimento = "Coperto"
-				 WHERE UsernamePresenter is not null;
+				 #UPDATE ARTICOLO
+				   SET NEW.StatoSvolgimento = "Coperto";
+				 #WHERE UsernamePresenter is not null;
   END
 | delimiter ;
 

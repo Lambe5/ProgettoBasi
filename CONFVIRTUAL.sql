@@ -335,7 +335,7 @@ CREATE PROCEDURE AssociaAmministratore(UsernameAmministratore varchar(30), Acron
 | delimiter ;
 commit;
 
-#Stored procedure --> crea programma_giornaliero
+#Stored procedure 2 --> crea programma_giornaliero
 start transaction;
  delimiter |
  CREATE PROCEDURE CreaProgrammaGiornaliero(Id varchar(10), AcronimoConferenza varchar(30), AnnoEdizioneConferenza varchar(30), Data date)
@@ -345,7 +345,7 @@ start transaction;
     END
 | delimiter ;
 
-#Stored procedure 2 --> crea Sessione
+#Stored procedure 3 --> crea Sessione
 start transaction;
 delimiter |
 CREATE PROCEDURE CreaSessione(IN Codice varchar(10), IN IdProgramma varchar(10),  IN LinkTeams varchar(100), IN OraIni time, IN OraFine time, IN Titolo varchar(100))
@@ -364,7 +364,7 @@ CREATE PROCEDURE CreaSessione(IN Codice varchar(10), IN IdProgramma varchar(10),
 	END;
 | delimiter ;
 
-#Stored procedure 3 --> crea Presentazione
+#Stored procedure 4 --> crea Presentazione
 start transaction;
 delimiter |
 CREATE PROCEDURE CreaPresentazione(Codice varchar(10), CodiceSessione varchar(10), NumSequenza int, OraFine time, OraIni time)
@@ -384,7 +384,7 @@ CREATE PROCEDURE CreaPresentazione(Codice varchar(10), CodiceSessione varchar(10
 	END;
 | delimiter ;
 
- # Stored procedure 4 --> associa speaker - tutorial
+ # Stored procedure 5 --> associa speaker - tutorial
  start transaction;
 delimiter |
 CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varchar(10), CodiceSessioneTutorial varchar(10))
@@ -398,8 +398,26 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
         end if;
     END
  | delimiter ;
+ /********************************************************************************************************************************/
+ #Stored procedure 6 --> Associa un presenter alla presentazione di un articolo
+start transaction;
+delimiter |
+CREATE PROCEDURE AssociaPresenter(CodicePresentazione varchar(10),CodiceSessionePresentazione varchar(10),UsernamePresenter varchar(30))
+BEGIN
+if((SELECT count(ARTICOLO.CodicePresentazione) FROM ARTICOLO WHERE 
+((ARTICOLO.CodicePresentazione=CodicePresentazione) and (ARTICOLO.CodiceSessionePresentazione=CodiceSessionePresentazione)))>0 AND 
+(SELECT count(PRESENTER.UsernameUtente) FROM PRESENTER WHERE (PRESENTER.UsernameUtente=UsernamePresenter))>0 ) THEN
+UPDATE ARTICOLO
+SET 
+UsernamePresenter=UsernamePresenter
+WHERE
+CodicePresentazione=CodicePresentazione AND CodiceSessionePresentazione=CodiceSessionePresentazione;
+COMMIT;
+end if;
+END  
+|delimiter;
  
- # Stored procedure 5 --> crea Utente, utile per la registrazione di un nuovo utente
+ # Stored procedure 7 --> crea Utente, utile per la registrazione di un nuovo utente
  start transaction;
  delimiter |
  CREATE PROCEDURE CreaUtente(Username varchar(30), Password varchar(30), Nome varchar(30), Cognome varchar(30), LuogoNascita varchar(30), DataNascita Date)
@@ -409,7 +427,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure 6 --> crea Speaker
+# Stored procedure 8 --> crea Speaker
  start transaction;
  delimiter |
  CREATE PROCEDURE CreaSpeaker(UsernameUtente varchar(30), NomeUni varchar(30), NomeDip varchar(30), CV varchar(30), Foto BLOB)
@@ -421,7 +439,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure 6 --> crea Presenter
+# Stored procedure 9 --> crea Presenter
  start transaction;
  delimiter |
  CREATE PROCEDURE CreaPresenter(UsernameUtente varchar(30), NomeUni varchar(30), NomeDip varchar(30), CV varchar(30), Foto BLOB)
@@ -433,7 +451,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure 7 --> modifica CV da parte dello speaker
+# Stored procedure 10 --> modifica CV da parte dello speaker
  start transaction;
  delimiter |
  CREATE PROCEDURE ModificaCVSpeaker(UsernameUtente varchar(30), CV varchar(30))
@@ -447,7 +465,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure 8 --> modifica Foto da parte dello speaker
+# Stored procedure 11 --> modifica Foto da parte dello speaker
  start transaction;
  delimiter |
  CREATE PROCEDURE ModificaFotoSpeaker(UsernameUtente varchar(30), Foto BLOB)
@@ -461,7 +479,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure 9 --> modifica affiliazione universitaria da parte dello speaker
+# Stored procedure 12 --> modifica affiliazione universitaria da parte dello speaker
  start transaction;
  delimiter |
  CREATE PROCEDURE ModificaAffiliazioneSpeaker(UsernameUtente varchar(30), NomeUni varchar(30), NomeDip varchar(30))
@@ -475,7 +493,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure 10 --> modifica CV da parte del presenter
+# Stored procedure 13 --> modifica CV da parte del presenter
  start transaction;
  delimiter |
  CREATE PROCEDURE ModificaCVPresenter(UsernameUtente varchar(30), CV varchar(30))
@@ -489,7 +507,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure 11 --> modifica Foto da parte del presenter
+# Stored procedure 14 --> modifica Foto da parte del presenter
  start transaction;
  delimiter |
  CREATE PROCEDURE ModificaFotoPresenter(UsernameUtente varchar(30), Foto BLOB)
@@ -503,7 +521,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure 12 --> modifica affiliazione universitaria da parte del presenter
+# Stored procedure 15 --> modifica affiliazione universitaria da parte del presenter
  start transaction;
  delimiter |
  CREATE PROCEDURE ModificaAffiliazionePresenter(UsernameUtente varchar(30), NomeUni varchar(30), NomeDip varchar(30))
@@ -517,7 +535,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure 13 --> creazione di un tutorial
+# Stored procedure 16 --> creazione di un tutorial
  start transaction;
  delimiter |
  CREATE PROCEDURE CreaTutorial(CodicePresentazione varchar(10), CodiceSessionePresentazione varchar(10), Titolo varchar(100), Abstract varchar(500))
@@ -528,7 +546,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure 14 --> crea info aggiuntive
+# Stored procedure 17 --> crea info aggiuntive
  start transaction;
  delimiter |
  CREATE PROCEDURE CreaInfoAggiuntive(UsernameSpeaker varchar(30), CodiceTutorial varchar(10), CodiceSessioneTutorial varchar(10), LinkWeb varchar(100), Descrizione varchar(500))
@@ -539,7 +557,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure 15 --> inserisci o modifica il link in info_aggiuntive
+# Stored procedure 18 --> inserisci o modifica il link in info_aggiuntive
  start transaction;
  delimiter |
  CREATE PROCEDURE ModificaLinkInfoAggiuntive(UsernameSpeaker varchar(30), CodiceTutorial varchar(10), CodiceSessioneTutorial varchar(10), LinkWeb varchar(100))
@@ -551,7 +569,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure 16 --> inserisci o modifica la descrizione in info_aggiuntive
+# Stored procedure 19 --> inserisci o modifica la descrizione in info_aggiuntive
  start transaction;
  delimiter |
  CREATE PROCEDURE ModificaDescrizioneInfoAggiuntive(UsernameSpeaker varchar(30), CodiceTutorial varchar(10), CodiceSessioneTutorial varchar(10), Descrizione varchar(500))
@@ -563,7 +581,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure 17 --> registrazione a una conferenza
+# Stored procedure 20 --> registrazione a una conferenza
  start transaction;
  delimiter |
  CREATE PROCEDURE RegistrazioneConferenza(UsernameUtente varchar(30), AcronimoConferenza varchar(30), AnnoEdizioneConferenza YEAR)
@@ -574,7 +592,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure 18 --> inserimento lista presentazioni favorite
+# Stored procedure 21 --> inserimento lista presentazioni favorite
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciPresentazionePreferitaInLista(UsernameUtente varchar(30), CodicePresentazione varchar(10), CodiceSessionePresentazione varchar(10))
@@ -585,7 +603,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure --> inserimento sponsor
+# Stored procedure 22 --> inserimento sponsor
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciSponsor(Nome varchar(30), ImgLogo BLOB)
@@ -596,7 +614,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure --> inserimento sponsorizzazione
+# Stored procedure 23 --> inserimento sponsorizzazione
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciSponsorizzazione(NomeSponsor varchar(30), AcronimoConferenza varchar(30), AnnoEdizioneConferenza YEAR, Importo float)
@@ -607,7 +625,8 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure --> inserimento autore
+# Stored procedure 24 --> inserimento autore
+
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciAutore(ID int, Nome varchar(30), Cognome varchar(30), CodiceArticolo varchar(10), CodiceSessioneArticolo varchar(10))
@@ -632,6 +651,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
 | delimiter ;
 
 # Stored procedure --> inserimento admin
+
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciAmministratore(UsernameUtente varchar(30))
@@ -642,7 +662,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure --> inserimento messaggio
+# Stored procedure 26 --> inserimento messaggio
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciMessaggio(CodiceSessione varchar(10), Timestamp float, UsernameUtente varchar(30), Testo varchar(500), DataInserimento date)
@@ -653,7 +673,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure --> inserimento valutazione
+# Stored procedure 27 --> inserimento valutazione
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciValutazione(UsernameAmministratore varchar(30), CodicePresentazione varchar(10), CodiceSessionePresentazione varchar(10), Voto int, Note varchar(50))
@@ -664,7 +684,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
     END
 | delimiter ;
 
-# Stored procedure --> inserimento parola chiave
+# Stored procedure 28 --> inserimento parola chiave
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciParolaChiave(CodiceArticolo varchar(10), Parola varchar(20))
@@ -724,7 +744,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
  
  #Lista dei trigger
 /********************************************************************************************************************************/
-#Trigger 2 --> Aggiorna il numero di presentazioni dentro la tabella SESSIONE
+#Trigger 1 --> Aggiorna il numero di presentazioni dentro la tabella SESSIONE
 delimiter |
 CREATE TRIGGER AggiornaNumeroPresentazioni
 		 AFTER INSERT ON PRESENTAZIONE
@@ -738,10 +758,12 @@ CREATE TRIGGER AggiornaNumeroPresentazioni
 /********************************************************************************************************************************/ 
 
 #DA TESTARE
-# trigger 1 : setta stato svolgimento a "Coperto" quando viene associato un Presenter ad un Articolo
+DROP TRIGGER IF EXISTS CambiaStatoSvolgimento;
+#NON FUNZIONANTE
+# trigger 2 : setta stato svolgimento a "Coperto" quando viene associato un Presenter ad un Articolo
 delimiter |
 CREATE TRIGGER CambiaStatoSvolgimento
-		 AFTER INSERT ON ARTICOLO
+		 AFTER UPDATE ON ARTICOLO
   FOR EACH ROW
 		 BEGIN
 				UPDATE ARTICOLO
@@ -753,7 +775,7 @@ CREATE TRIGGER CambiaStatoSvolgimento
 
 #Lista delle view
 /********************************************************************************************************************************/ 
-#View che restituisce le conferenze disponibili
+#View 1 | che restituisce le conferenze disponibili
 delimiter |
 CREATE VIEW CONFERENZE_DISPONIBILI(Acronimo, Nome, ImgLogo, AnnoEdizione) AS
 	 SELECT Acronimo, Nome, ImgLogo, AnnoEdizione
@@ -761,7 +783,7 @@ CREATE VIEW CONFERENZE_DISPONIBILI(Acronimo, Nome, ImgLogo, AnnoEdizione) AS
 	  WHERE (Svolgimento = "Attiva")
 | delimiter ;
 
-#View che restituisce il numero totale delle conferenze attive
+#View 2 | che restituisce il numero totale delle conferenze attive
 delimiter |
 CREATE VIEW ConferenzeAttive(TotConferenzeAttive) AS
 	 SELECT count(*)
@@ -769,14 +791,14 @@ CREATE VIEW ConferenzeAttive(TotConferenzeAttive) AS
      WHERE (Svolgimento = "Attiva")
 | delimiter ;
 
-#View che restituisce il numero totale degli utenti registrati
+#View 3 |  che restituisce il numero totale degli utenti registrati
 delimiter |
 CREATE VIEW UtentiRegistrati(TotUtenti) AS
 	 SELECT count(*)
 	 FROM UTENTE
 | delimiter ;
 
-#View che restituisce tutte le sessioni presenti
+#View 4 | che restituisce tutte le sessioni presenti
 delimiter |
 CREATE VIEW SessioniPresenti(Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) AS
 	 SELECT Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo
@@ -820,7 +842,7 @@ CREATE VIEW SpeakerVotoMed(UsernameSpeaker, VotoMed) AS
 /********************************************************************************************************************************/ 
  
 
-# evento: setta svolgimento della conferenza a "Completata" dopo la scadenza
+# evento 1: setta svolgimento della conferenza a "Completata" dopo la scadenza
 delimiter |
 CREATE EVENT ModificaSvolgimento
 ON SCHEDULE EVERY 24 HOUR

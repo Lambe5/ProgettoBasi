@@ -249,6 +249,7 @@ CREATE TABLE PRESENTAZIONE_TUTORIAL(
 ) ENGINE = INNODB;
 
 #insert di prova per testare la creazione di una sessione
+
 INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome)
  values ("Acronimo1",2022,"img1","Conferenza1");
  
@@ -260,8 +261,15 @@ INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita
 INSERT INTO SPEAKER (UsernameUtente, NomeUni, NomeDip, CV, Foto) values ("CiccioSp", "Unibo", "Informatica", "Sono bravo a esporre", "imgCiccio");
 
 INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) values ("A123", "007", "link1", "11:00", "9:00", "titolo1");
+INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) values ("A125", "007", "link2", "11:00", "9:00", "titolo2");
 
 INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) values ("P125", "A123", 3, "11:00", "9:00"); 
+INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) values ("P128", "A125", 2, "12:00", "8:00"); 
+
+INSERT INTO ARTICOLO(CodicePresentazione,CodiceSessionePresentazione,Numpagine,filePDF,Titolo,StatoSvolgimento) 
+values ("P128","A125",150,"meme1","Essere o non essere?","NonCoperto");
+
+INSERT INTO PRESENTER (UsernameUtente,NomeUni,NomeDip,CV,Foto) values ("CiccioSp","UniSBO","Scienze","Non sono bello ma rappo","meme1");
 
 INSERT INTO TUTORIAL (CodicePresentazione, CodiceSessionePresentazione, Titolo, Abstract) values ("P125", "A123", "Come fare schifo", "hwqvouq");
 
@@ -331,6 +339,24 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
         end if;
     END
  | delimiter ;
+ /********************************************************************************************************************************/
+ #Stored procedure 5 --> Associa un presenter alla presentazione di un articolo
+start transaction;
+delimiter |
+CREATE PROCEDURE AssociaPresenter(CodicePresentazione varchar(10),CodiceSessionePresentazione varchar(10),UsernamePresenter varchar(30))
+BEGIN
+if((SELECT count(ARTICOLO.CodicePresentazione) FROM ARTICOLO WHERE 
+((ARTICOLO.CodicePresentazione=CodicePresentazione) and (ARTICOLO.CodiceSessionePresentazione=CodiceSessionePresentazione)))>0 AND 
+(SELECT count(PRESENTER.UsernameUtente) FROM PRESENTER WHERE (PRESENTER.UsernameUtente=UsernamePresenter))>0 ) THEN
+UPDATE ARTICOLO
+SET 
+UsernamePresenter=UsernamePresenter
+WHERE
+CodicePresentazione=CodicePresentazione AND CodiceSessionePresentazione=CodiceSessionePresentazione;
+COMMIT;
+end if;
+END  
+|delimiter;
  
  #Lista dei trigger
 /********************************************************************************************************************************/
@@ -348,10 +374,12 @@ CREATE TRIGGER AggiornaNumeroPresentazioni
 /********************************************************************************************************************************/ 
 
 #DA TESTARE
+DROP TRIGGER IF EXISTS CambiaStatoSvolgimento;
+#NON FUNZIONANTE
 # trigger 1 : setta stato svolgimento a "Coperto" quando viene associato un Presenter ad un Articolo
 delimiter |
 CREATE TRIGGER CambiaStatoSvolgimento
-		 AFTER INSERT ON ARTICOLO
+		 AFTER UPDATE ON ARTICOLO
   FOR EACH ROW
 		 BEGIN
 				UPDATE ARTICOLO

@@ -731,9 +731,29 @@ CREATE VIEW VisualizzaLIstaConferenzeFavo(CodicePresentazione, CodiceSessionePre
 	 FROM LISTA_PRESENTAZIONI_FAVORITE
      WHERE (LISTA_PRESENTAZIONI_FAVORITE.UsernameUtente = UsernameUtente);
 | delimiter ;
-/********************************************************************************************************************************/ 
- 
 
+
+delimiter |
+CREATE VIEW VisualizzaSessioni (CodiceSessione,IdProgramma,LinkTeams,NumPresentazioni,OraFineSessione,OraIniSessione,Titolo) AS
+SELECT Codice as CodiceSessione,IdProgramma,LinkTeams,NumPresentazioni,OraFine as OraFineSessione,OraIni as OraIniSessione,Titolo
+FROM SESSIONE
+| delimiter;
+/********************************************************************************************************************************/ 
+ delimiter |
+ CREATE VIEW VisualizzaPresentazioni (CodicePresentazione,NumSequenza,CodiceSessionePr,OraFinePresentazione,OraIniPresentazione) AS
+ SELECT Codice as CodicePresentazione,NumSequenza,CodiceSessione as CodiceSessionePr, OraFine as OraFinePresentazione, OraIni as OraIniPresentazione
+ FROM PRESENTAZIONE
+ | delimiter;
+/********************************************************************************************************************************/ 
+-- View 6 | Visualizzare le Sessioni e le presentazioni di ogni sessione
+delimiter |
+CREATE VIEW VisualizzaPresentazioniSessioni(CodiceSessione,IdProgramma,LinkTeams,NumPresentazioni,OraFineSessione,OraIniSessione,Titolo,CodicePresentazione,NumSequenza,OraFinePresentazione,OraIniPresentazione) AS
+SELECT CodiceSessione,IdProgramma,LinkTeams,NumPresentazioni,OraFineSessione,OraIniSessione,Titolo,CodicePresentazione,NumSequenza,OraFinePresentazione,OraIniPresentazione
+FROM VisualizzaPresentazioni,VisualizzaSessioni
+WHERE CodiceSessione=CodiceSessionePr
+GROUP BY (CodiceSessione)
+| delimiter;
+/********************************************************************************************************************************/ 
 # evento 1: setta svolgimento della conferenza a "Completata" dopo la scadenza
 delimiter |
 CREATE EVENT ModificaSvolgimento

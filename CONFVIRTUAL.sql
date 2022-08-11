@@ -104,7 +104,7 @@ CREATE TABLE MESSAGGIO(
         primary key (CodiceSessione, Timestamp),
         
         foreign key(CodiceSessione) references SESSIONE(Codice) on delete cascade,
-        foreign key(UsernameUtente) references UTENTE(Username) on delete cascade
+        foreign key(UsernameUtente) references UTENTE(Username)
         
 ) ENGINE = INNODB;
  
@@ -133,7 +133,7 @@ CREATE TABLE PRESENTAZIONE(
 		primary key(CodicePresentazione, CodiceSessionePresentazione),
         
         foreign key(CodicePresentazione, CodiceSessionePresentazione) references PRESENTAZIONE(Codice, CodiceSessione) on delete cascade,
-        foreign key(UsernamePresenter) references PRESENTER(UsernameUtente) on delete cascade
+        foreign key(UsernamePresenter) references PRESENTER(UsernameUtente)
         
 ) ENGINE = INNODB;
  
@@ -180,7 +180,7 @@ CREATE TABLE LISTA_PRESENTAZIONI_FAVORITE(
 		
         primary key(UsernameUtente, CodicePresentazione, CodiceSessionePresentazione), 
 		
-        foreign key(UsernameUtente) references UTENTE(Username) on delete cascade,
+        foreign key(UsernameUtente) references UTENTE(Username),
         foreign key(CodicePresentazione, CodiceSessionePresentazione) references PRESENTAZIONE(Codice, CodiceSessione) on delete cascade
         
 ) ENGINE = INNODB;
@@ -192,7 +192,7 @@ CREATE TABLE REGISTRAZIONE(
 		
         primary key(UsernameUtente, AcronimoConferenza, AnnoEdizioneConferenza), 
 		
-        foreign key(UsernameUtente) references UTENTE(Username) on delete cascade,
+        foreign key(UsernameUtente) references UTENTE(Username),
         foreign key(AcronimoConferenza, AnnoEdizioneConferenza) references CONFERENZA(Acronimo, AnnoEdizione) on delete cascade
 
 ) ENGINE = INNODB;
@@ -204,7 +204,7 @@ CREATE TABLE CREAZIONE(
 		
         primary key(UsernameAmministratore, AcronimoConferenza, AnnoEdizioneConferenza),
         
-		foreign key(UsernameAmministratore) references AMMINISTRATORE(UsernameUtente) on delete cascade,
+		foreign key(UsernameAmministratore) references AMMINISTRATORE(UsernameUtente),
         foreign key(AcronimoConferenza, AnnoEdizioneConferenza) references CONFERENZA(Acronimo, AnnoEdizione) on delete cascade
         
 ) ENGINE = INNODB;
@@ -219,7 +219,7 @@ CREATE TABLE VALUTAZIONE(
         primary key(UsernameAmministratore, CodicePresentazione, CodiceSessionePresentazione), 
 		
         foreign key(CodicePresentazione, CodiceSessionePresentazione) references PRESENTAZIONE(Codice, CodiceSessione) on delete cascade, 
-		foreign key(UsernameAmministratore) references AMMINISTRATORE(UsernameUtente) on delete cascade
+		foreign key(UsernameAmministratore) references AMMINISTRATORE(UsernameUtente)
         
 ) ENGINE = INNODB; 
  
@@ -232,7 +232,7 @@ CREATE TABLE VALUTAZIONE(
         
 		primary key(UsernameSpeaker, CodiceTutorial, CodiceSessioneTutorial),
         
-        foreign key(UsernameSpeaker) references SPEAKER(UsernameUtente) on delete cascade,
+        foreign key(UsernameSpeaker) references SPEAKER(UsernameUtente),
 		foreign key(CodiceTutorial, CodiceSessioneTutorial) references TUTORIAL(CodicePresentazione, CodiceSessionePresentazione) on delete cascade
         
 ) ENGINE = INNODB;
@@ -244,7 +244,7 @@ CREATE TABLE PRESENTAZIONE_TUTORIAL(
 		
         primary key(UsernameSpeaker, CodiceTutorial, CodiceSessioneTutorial),
         
-		foreign key(UsernameSpeaker) references SPEAKER(UsernameUtente) on delete cascade,
+		foreign key(UsernameSpeaker) references SPEAKER(UsernameUtente),
         foreign key(CodiceTutorial, CodiceSessioneTutorial) references TUTORIAL(CodicePresentazione, CodiceSessionePresentazione) on delete cascade
         
 ) ENGINE = INNODB;
@@ -252,42 +252,99 @@ CREATE TABLE PRESENTAZIONE_TUTORIAL(
 #insert di prova per testare la creazione di una sessione
 
 INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome)
- values ("Acronimo1",2022,"img1","Conferenza1");
+values ("Acronimo1",2022,"img1","Conferenza1");
+INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome)
+values ("Acronimo2",2022,"img1","Conferenza2");
+INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome)
+values ("Acronimo3",2022,"img1","Conferenza3");
  
+INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
+values ("CiccioSp", "123", "Ciccio", "Pasticcio", "Bologna", "2000-10-10");
+INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
+values ("ZicP", "123", "Zic", "Allergy", "Bologna", "2000-10-10");
+INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
+values ("ZurgP", "123", "Zurg", "Toy", "Bologna", "2000-10-10");
+INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
+values ("ZurgSp", "123", "Zurg", "Toy", "Bologna", "2000-10-10");
+
 INSERT INTO PROGRAMMA_GIORNALIERO (Id, AcronimoConferenza, AnnoEdizioneConferenza, Data)
- values ("007","Acronimo1",2022,"2022-08-15");
+values ("007","Acronimo1",2022,"2022-08-15");
+INSERT INTO PROGRAMMA_GIORNALIERO (Id, AcronimoConferenza, AnnoEdizioneConferenza, Data)
+values ("008","Acronimo2",2022,"2022-08-15");
+INSERT INTO PROGRAMMA_GIORNALIERO (Id, AcronimoConferenza, AnnoEdizioneConferenza, Data)
+values ("009","Acronimo3",2022,"2022-08-15");
 
-INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) values ("CiccioSp", "123", "Ciccio", "Pasticcio", "Bologna", "2000-10-10");
+INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) 
+values ("A123", "007", "link1", "11:00", "9:00", "titolo1");
+INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) 
+values ("A124", "008", "link1", "11:00", "9:00", "titolo1");
+INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) 
+values ("A125", "009", "link1", "11:00", "9:00", "titolo1");
+INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) 
+values ("A200", "007", "link2", "11:00", "9:00", "titolo2");
 
-INSERT INTO SPEAKER (UsernameUtente, NomeUni, NomeDip, CV, Foto) values ("CiccioSp", "Unibo", "Informatica", "Sono bravo a esporre", "imgCiccio");
+INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) 
+values ("P125", "A123", 3, "11:00", "9:00"); 
+INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) 
+values ("P126", "A123", 3, "11:00", "9:00"); 
+INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) 
+values ("P127", "A124", 3, "11:00", "9:00"); 
 
-INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) values ("A123", "007", "link1", "11:00", "9:00", "titolo1");
-INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) values ("A125", "007", "link2", "11:00", "9:00", "titolo2");
-INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) values ("A200", "007", "link2", "11:00", "9:00", "titolo2");
+INSERT INTO PRESENTER (UsernameUtente, NomeUni, NomeDip, CV, Foto)
+values ("ZicP", "Unibo", "InfoMan", "CV1", "Foto1");
+INSERT INTO PRESENTER (UsernameUtente, NomeUni, NomeDip, CV, Foto)
+values ("ZurgP", "Unibo", "InfoMan", "CV2", "Foto2");
 
-INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) values ("P125", "A123", 3, "11:00", "9:00"); 
--- INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) values ("P128", "A125", 2, "12:00", "8:00"); 
+INSERT INTO ARTICOLO (CodicePresentazione, CodiceSessionePresentazione, NumPagine, filePDF, Titolo, UsernamePresenter)
+values ("P125", "A123", 20, "file.pdf", "Titolo1", "ZicP");
+INSERT INTO ARTICOLO (CodicePresentazione, CodiceSessionePresentazione, NumPagine, filePDF, Titolo, UsernamePresenter)
+values ("P127", "A124", 20, "file.pdf", "Titolo1", "ZurgP");
 
-INSERT INTO PRESENTER (UsernameUtente,NomeUni,NomeDip,CV,Foto) values ("CiccioSp","UniSBO","Scienze","Non sono bello ma rappo","meme1");
+
+INSERT INTO AMMINISTRATORE (UsernameUtente)
+values ("CiccioSp");
+
+INSERT INTO VALUTAZIONE (UsernameAmministratore, CodicePresentazione, CodiceSessionePresentazione, Voto, Note)
+values ("CiccioSp", "P125", "A123", 7, "note");
+INSERT INTO VALUTAZIONE (UsernameAmministratore, CodicePresentazione, CodiceSessionePresentazione, Voto, Note)
+values ("CiccioSp", "P127", "A124", 9, "note");
+
+INSERT INTO SPEAKER (UsernameUtente, NomeUni, NomeDip, CV, Foto) 
+values ("CiccioSp", "Unibo", "Informatica", "Sono bravo a esporre", "imgCiccio");
+
+
+INSERT INTO TUTORIAL (CodicePresentazione, CodiceSessionePresentazione, Titolo, Abstract) 
+values ("P125", "A123", "Come fare schifo", "hwqvouq");
+
 
 -- INSERT INTO ARTICOLO(CodicePresentazione,CodiceSessionePresentazione,Numpagine,filePDF,Titolo,StatoSvolgimento,UsernamePresenter) 
 -- values ("P128","A125",150,"meme1","Essere o non essere?","NonCoperto",null);
 
 -- UPDATE ARTICOLO SET UsernamePresenter='CiccioSp' WHERE CodicePresentazione='P128';
 
-INSERT INTO TUTORIAL (CodicePresentazione, CodiceSessionePresentazione, Titolo, Abstract) values ("P125", "A123", "Come fare schifo", "hwqvouq");
+INSERT INTO INFO_AGGIUNTIVE (UsernameSpeaker, CodiceTutorial, CodiceSessioneTutorial, LinkWeb, Descrizione) 
+values ("CiccioSp", "P125", "A123", "link1", "descrizione1");
 
-INSERT INTO INFO_AGGIUNTIVE (UsernameSpeaker, CodiceTutorial, CodiceSessioneTutorial, LinkWeb, Descrizione) values ("CiccioSp", "P125", "A123", "link1", "descrizione1");
+
 
 #Lista stored procedure
 /********************************************************************************************************************************/
-#Stored procedure 1 --> crea Conferenza e associa l'admin
+#Stored procedure 1 --> crea Conferenza
 start transaction;
 delimiter |
-CREATE PROCEDURE CreaConferenza(IN Acronimo varchar(30), IN AnnoEdizione YEAR, IN ImgLogo BLOB, IN Nome varchar(30), UsernameAdmin varchar(30))
+CREATE PROCEDURE CreaConferenza(IN Acronimo varchar(30), IN AnnoEdizione YEAR, IN ImgLogo BLOB, IN Nome varchar(30))
 	BEGIN
 			INSERT INTO CONFERENZA SET Acronimo = Acronimo, AnnoEdizione = AnnoEdizione, ImgLogo = ImgLogo, Nome = Nome;
-            INSERT INTO CREAZIONE SET UsernameAmministratore = UsernameAdmin, AcronimoConferenza = Acronimo, AnnoEdizioneConferenza = AnnoEdizione;
+	END;
+| delimiter ;
+commit;
+
+#Stored procedure --> associa admin a conferenza creata
+start transaction;
+delimiter |
+CREATE PROCEDURE AssociaAmministratore(UsernameAmministratore varchar(30), AcronimoConferenza varchar(30), AnnoEdizioneConferenza YEAR)
+	BEGIN
+			INSERT INTO CREAZIONE SET UsernameAmministratore = UsernameAmministratore, AcronimoConferenza = AcronimoConferenza, AnnoEdizioneConferenza = AnnoEdizioneConferenza;
 	END;
 | delimiter ;
 commit;
@@ -601,7 +658,7 @@ end if;
     END
 | delimiter ;
 
-# Stored procedure 25 --> inserimento autore e associa a lista autori
+# Stored procedure 25 --> inserisci autore
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciAutore(ID int, Nome varchar(30), Cognome varchar(30), CodiceArticolo varchar(10), CodiceSessioneArticolo varchar(10))
@@ -614,7 +671,19 @@ end if;
     END
 | delimiter ;
 
-# Stored procedure 26 --> inserimento admin
+
+# Stored procedure 26 --> inserisci autore nella lista
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE InserisciListaAutori(IdAutore int, CodiceArticolo varchar(10), CodiceSessioneArticolo varchar(10))
+	BEGIN
+    INSERT INTO LISTA_AUTORI
+    SET IdAutore = IdAutore, CodiceArticolo = CodiceArticolo, CodiceSessioneArticolo = CodiceSessioneArticolo;
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure 27 --> inserimento admin
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciAmministratore(UsernameUtente varchar(30))
@@ -625,7 +694,7 @@ end if;
     END
 | delimiter ;
 
-# Stored procedure 27 --> inserimento messaggio
+# Stored procedure 28 --> inserimento messaggio
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciMessaggio(CodiceSessione varchar(10), Timestamp float, UsernameUtente varchar(30), Testo varchar(500), DataInserimento date)
@@ -636,7 +705,7 @@ end if;
     END
 | delimiter ;
 
-# Stored procedure 28 --> inserimento valutazione
+# Stored procedure 29 --> inserimento valutazione
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciValutazione(UsernameAmministratore varchar(30), CodicePresentazione varchar(10), CodiceSessionePresentazione varchar(10), Voto int, Note varchar(50))
@@ -647,13 +716,57 @@ end if;
     END
 | delimiter ;
 
-# Stored procedure 29 --> inserimento parola chiave
+# Stored procedure 30 --> inserimento parola chiave
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciParolaChiave(CodiceArticolo varchar(10), Parola varchar(20))
 	BEGIN
     INSERT INTO PAROLA_CHIAVE
     SET CodiceArticolo = CodiceArticolo, Parola = Parola;
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure 31 --> elimina conferenza
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE EliminaConferenza(Acronimo varchar(30), AnnoEdizione YEAR)
+	BEGIN
+    DELETE FROM CONFERENZA
+	WHERE (CONFERENZA.Acronimo = Acronimo) AND (CONFERENZA.AnnoEdizione = AnnoEdizione);
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure 32 --> elimina sessione
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE EliminaSessione(Codice varchar(10))
+	BEGIN
+    DELETE FROM SESSIONE
+	WHERE (SESSIONE.Codice = Codice);
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure 33 --> elimina presentazione
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE EliminaPresentazione(Codice varchar(10), CodiceSessione varchar(10))
+	BEGIN
+    DELETE FROM PRESENTAZIONE
+	WHERE (PRESENTAZIONE.Codice = Codice) AND (PRESENTAZIONE.CodiceSessione = CodiceSessione);
+    COMMIT;
+    END
+| delimiter ;
+
+# Stored procedure 34 --> elimina info aggiuntive
+ start transaction;
+ delimiter |
+ CREATE PROCEDURE EliminaInfoAggiuntive(UsernameSpeaker varchar(30), CodiceTutorial varchar(10), CodiceSessioneTutorial varchar(10))
+	BEGIN
+    DELETE FROM INFO_AGGIUNTIVE
+	WHERE (INFO_AGGIUNTIVE.UsernameSpeaker = UsernameSpeaker) AND (INFO_AGGIUNTIVE.CodiceTutorial = CodiceTutorial) AND (INFO_AGGIUNTIVE.CodiceSessioneTutorial = CodiceSessioneTutorial);
     COMMIT;
     END
 | delimiter ;
@@ -704,7 +817,7 @@ CREATE VIEW CONFERENZE_DISPONIBILI(Acronimo, Nome, ImgLogo, AnnoEdizione) AS
 #View 2 | che restituisce il numero totale delle conferenze attive
 delimiter |
 CREATE VIEW ConferenzeAttive(TotConferenzeAttive) AS
-	 SELECT count(Acronimo)
+	 SELECT count(*)
 	 FROM CONFERENZA
      WHERE (Svolgimento = "Attiva")
 | delimiter ;
@@ -712,7 +825,7 @@ CREATE VIEW ConferenzeAttive(TotConferenzeAttive) AS
 #View 3 |  che restituisce il numero totale degli utenti registrati
 delimiter |
 CREATE VIEW UtentiRegistrati(TotUtenti) AS
-	 SELECT count(Username)
+	 SELECT count(*)
 	 FROM UTENTE
 | delimiter ;
 
@@ -723,13 +836,39 @@ CREATE VIEW SessioniPresenti(Codice, IdProgramma, LinkTeams, OraFine, OraIni, Ti
 	 FROM SESSIONE
 | delimiter ;
 
-#NON VA BENE
-#View 5 | che restituisce la lista delle presentazioni preferite
+#View che restituisce il numero tot delle conferenze registrate (in tutta la piattaforma)
 delimiter |
-CREATE VIEW VisualizzaLIstaConferenzeFavo(CodicePresentazione, CodiceSessionePresentazione) AS
-	 SELECT CodicePresentazione, CodiceSessionePresentazione
-	 FROM LISTA_PRESENTAZIONI_FAVORITE
-     WHERE (LISTA_PRESENTAZIONI_FAVORITE.UsernameUtente = UsernameUtente);
+CREATE VIEW NumConferenzeRegistrate(TotConferenze) AS
+	 SELECT count(*)
+	 FROM CONFERENZA
+| delimiter ;
+
+# TESTARE
+#View che restituisce lista presenters in base al voto medio in modo discendente
+delimiter |
+CREATE VIEW PresenterVotoMed(UsernamePresenter, VotoMed) AS
+	 SELECT PRESENTER.UsernameUtente, AVG(VALUTAZIONE.Voto) AS VotoMed
+	 FROM PRESENTER, VALUTAZIONE, ARTICOLO
+     WHERE (PRESENTER.UsernameUtente = ARTICOLO.UsernamePresenter) AND
+		   (ARTICOLO.CodicePresentazione = VALUTAZIONE.CodicePresentazione) AND
+           (ARTICOLO.CodiceSessionePresentazione = VALUTAZIONE.CodiceSessionePresentazione)# AND
+           #(ARTICOLO.UsernamePresenter = PRESENTER.UsernameUtente) vedi se serve doppio controllo o no
+	GROUP BY PRESENTER.UsernameUtente
+    ORDER BY VotoMed DESC
+| delimiter ;
+
+# TESTARE
+#View che restituisce lista speaker in base al voto medio in modo discendente
+delimiter |
+CREATE VIEW SpeakerVotoMed(UsernameSpeaker, VotoMed) AS
+	 SELECT SPEAKER.UsernameUtente, AVG(VALUTAZIONE.Voto) AS VotoMed
+	 FROM SPEAKER, VALUTAZIONE, PRESENTAZIONE_TUTORIAL
+     WHERE (SPEAKER.UsernameUtente = PRESENTAZIONE_TUTORIAL.UsernameSpeaker) AND
+		   (PRESENTAZIONE_TUTORIAL.CodiceTutorial = VALUTAZIONE.CodicePresentazione) AND
+           (PRESENTAZIONE_TUTORIAL.CodiceSessioneTutorial = VALUTAZIONE.CodiceSessionePresentazione) #AND
+           #(PRESENTAZIONE_TUTORIAL.UsernameSpeaker = SPEAKER.UsernameUtente) vedi se serve doppio controllo o no
+	GROUP BY SPEAKER.UsernameUtente
+    ORDER BY VotoMed DESC
 | delimiter ;
 
 

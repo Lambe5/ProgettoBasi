@@ -264,6 +264,8 @@ INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita
 values ("ZicP", "123", "Zic", "Allergy", "Bologna", "2000-10-10");
 INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
 values ("ZurgP", "123", "Zurg", "Toy", "Bologna", "2000-10-10");
+INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
+values ("ZurgSp", "123", "Zurg", "Toy", "Bologna", "2000-10-10");
 
 INSERT INTO PROGRAMMA_GIORNALIERO (Id, AcronimoConferenza, AnnoEdizioneConferenza, Data)
 values ("007","Acronimo1",2022,"2022-08-15");
@@ -312,6 +314,7 @@ values ("P125", "A123", "Come fare schifo", "hwqvouq");
 
 INSERT INTO INFO_AGGIUNTIVE (UsernameSpeaker, CodiceTutorial, CodiceSessioneTutorial, LinkWeb, Descrizione) 
 values ("CiccioSp", "P125", "A123", "link1", "descrizione1");
+
 
 #Lista stored procedure
 /********************************************************************************************************************************/

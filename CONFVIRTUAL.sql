@@ -280,6 +280,8 @@ INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo)
 values ("A124", "008", "link1", "11:00", "9:00", "titolo1");
 INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) 
 values ("A125", "009", "link1", "11:00", "9:00", "titolo1");
+INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) 
+values ("A200", "007", "link2", "11:00", "9:00", "titolo2");
 
 INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) 
 values ("P125", "A123", 3, "11:00", "9:00"); 
@@ -298,6 +300,7 @@ values ("P125", "A123", 20, "file.pdf", "Titolo1", "ZicP");
 INSERT INTO ARTICOLO (CodicePresentazione, CodiceSessionePresentazione, NumPagine, filePDF, Titolo, UsernamePresenter)
 values ("P127", "A124", 20, "file.pdf", "Titolo1", "ZurgP");
 
+
 INSERT INTO AMMINISTRATORE (UsernameUtente)
 values ("CiccioSp");
 
@@ -309,11 +312,19 @@ values ("CiccioSp", "P127", "A124", 9, "note");
 INSERT INTO SPEAKER (UsernameUtente, NomeUni, NomeDip, CV, Foto) 
 values ("CiccioSp", "Unibo", "Informatica", "Sono bravo a esporre", "imgCiccio");
 
+
 INSERT INTO TUTORIAL (CodicePresentazione, CodiceSessionePresentazione, Titolo, Abstract) 
 values ("P125", "A123", "Come fare schifo", "hwqvouq");
 
+
+-- INSERT INTO ARTICOLO(CodicePresentazione,CodiceSessionePresentazione,Numpagine,filePDF,Titolo,StatoSvolgimento,UsernamePresenter) 
+-- values ("P128","A125",150,"meme1","Essere o non essere?","NonCoperto",null);
+
+-- UPDATE ARTICOLO SET UsernamePresenter='CiccioSp' WHERE CodicePresentazione='P128';
+
 INSERT INTO INFO_AGGIUNTIVE (UsernameSpeaker, CodiceTutorial, CodiceSessioneTutorial, LinkWeb, Descrizione) 
 values ("CiccioSp", "P125", "A123", "link1", "descrizione1");
+
 
 
 #Lista stored procedure
@@ -403,22 +414,22 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
  | delimiter ;
  /********************************************************************************************************************************/
  #Stored procedure 6 --> Associa un presenter alla presentazione di un articolo
-start transaction;
-delimiter |
-CREATE PROCEDURE AssociaPresenter(CodicePresentazione varchar(10),CodiceSessionePresentazione varchar(10),UsernamePresenter varchar(30))
-BEGIN
-if((SELECT count(ARTICOLO.CodicePresentazione) FROM ARTICOLO WHERE 
-((ARTICOLO.CodicePresentazione=CodicePresentazione) and (ARTICOLO.CodiceSessionePresentazione=CodiceSessionePresentazione)))>0 AND 
-(SELECT count(PRESENTER.UsernameUtente) FROM PRESENTER WHERE (PRESENTER.UsernameUtente=UsernamePresenter))>0 ) THEN
-UPDATE ARTICOLO
-SET 
-UsernamePresenter=UsernamePresenter
-WHERE
-CodicePresentazione=CodicePresentazione AND CodiceSessionePresentazione=CodiceSessionePresentazione;
-COMMIT;
-end if;
-END  
-|delimiter;
+-- start transaction;
+-- delimiter |
+-- CREATE PROCEDURE AssociaPresenter(CodicePresentazione varchar(10),CodiceSessionePresentazione varchar(10),UsernamePresenter varchar(30))
+-- BEGIN
+-- if((SELECT count(ARTICOLO.CodicePresentazione) FROM ARTICOLO WHERE 
+-- ((ARTICOLO.CodicePresentazione=CodicePresentazione) and (ARTICOLO.CodiceSessionePresentazione=CodiceSessionePresentazione)))>0 AND 
+-- (SELECT count(PRESENTER.UsernameUtente) FROM PRESENTER WHERE (PRESENTER.UsernameUtente=UsernamePresenter))>0 ) THEN
+-- UPDATE ARTICOLO
+-- SET 
+-- UsernamePresenter=UsernamePresenter
+-- WHERE
+-- CodicePresentazione=CodicePresentazione AND CodiceSessionePresentazione=CodiceSessionePresentazione;
+-- COMMIT;
+-- end if;
+-- END  
+-- |delimiter;
  
  # Stored procedure 7 --> crea Utente, utile per la registrazione di un nuovo utente
  start transaction;
@@ -594,8 +605,27 @@ END
     COMMIT;
     END
 | delimiter ;
-
-# Stored procedure 21 --> inserimento lista presentazioni favorite
+#Store Procedure 21 --> Crea Articolo
+start transaction;
+delimiter |
+CREATE PROCEDURE CreaArticolo(CodicePresentazione varchar(10),CodiceSessionePresentazione varchar(10),
+ Numpagine int(11), filePDF blob, Titolo varchar(100),StatoSvolgimento enum('Coperto','NonCoperto'),UsernamePresenter varchar(30))
+ BEGIN
+ if(SELECT count(CodicePresentazione) FROM PRESENTAZIONE WHERE ((CodicePresentazione=CodicePresentazione) 
+and (CodiceSessionePresentazione=CodiceSessionePresentazione))>0) then
+INSERT INTO ARTICOLO
+ SET CodicePresentazione=CodicePresentazione,
+	CodiceSessionePresentazione=CodiceSessionePresentazione,
+    Numpagine=Numpagine,
+    filePDF=filePDF,
+    Titolo=Titolo,
+    StatoSvolgimento=StatoSvolgimento,
+    UsernamePresenter=UsernamePresenter;
+    COMMIT;
+end if;
+ END
+| delimiter;
+# Stored procedure 22 --> inserimento lista presentazioni favorite
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciPresentazionePreferitaInLista(UsernameUtente varchar(30), CodicePresentazione varchar(10), CodiceSessionePresentazione varchar(10))
@@ -606,7 +636,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure 22 --> inserimento sponsor
+# Stored procedure 23 --> inserimento sponsor
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciSponsor(Nome varchar(30), ImgLogo BLOB)
@@ -617,7 +647,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure 23 --> inserimento sponsorizzazione
+# Stored procedure 24 --> inserimento sponsorizzazione
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciSponsorizzazione(NomeSponsor varchar(30), AcronimoConferenza varchar(30), AnnoEdizioneConferenza YEAR, Importo float)
@@ -628,8 +658,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure 24 --> inserimento autore
-
+# Stored procedure 25 --> inserisci autore
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciAutore(ID int, Nome varchar(30), Cognome varchar(30), CodiceArticolo varchar(10), CodiceSessioneArticolo varchar(10))
@@ -642,7 +671,8 @@ END
     END
 | delimiter ;
 
-# Stored procedure --> inserisci autore nella lista
+
+# Stored procedure 26 --> inserisci autore nella lista
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciListaAutori(IdAutore int, CodiceArticolo varchar(10), CodiceSessioneArticolo varchar(10))
@@ -653,8 +683,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure --> inserimento admin
-
+# Stored procedure 27 --> inserimento admin
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciAmministratore(UsernameUtente varchar(30))
@@ -665,7 +694,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure 26 --> inserimento messaggio
+# Stored procedure 28 --> inserimento messaggio
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciMessaggio(CodiceSessione varchar(10), Timestamp float, UsernameUtente varchar(30), Testo varchar(500), DataInserimento date)
@@ -676,7 +705,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure 27 --> inserimento valutazione
+# Stored procedure 29 --> inserimento valutazione
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciValutazione(UsernameAmministratore varchar(30), CodicePresentazione varchar(10), CodiceSessionePresentazione varchar(10), Voto int, Note varchar(50))
@@ -687,7 +716,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure 28 --> inserimento parola chiave
+# Stored procedure 30 --> inserimento parola chiave
  start transaction;
  delimiter |
  CREATE PROCEDURE InserisciParolaChiave(CodiceArticolo varchar(10), Parola varchar(20))
@@ -698,7 +727,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure --> elimina conferenza
+# Stored procedure 31 --> elimina conferenza
  start transaction;
  delimiter |
  CREATE PROCEDURE EliminaConferenza(Acronimo varchar(30), AnnoEdizione YEAR)
@@ -709,7 +738,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure --> elimina sessione
+# Stored procedure 32 --> elimina sessione
  start transaction;
  delimiter |
  CREATE PROCEDURE EliminaSessione(Codice varchar(10))
@@ -720,7 +749,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure --> elimina presentazione
+# Stored procedure 33 --> elimina presentazione
  start transaction;
  delimiter |
  CREATE PROCEDURE EliminaPresentazione(Codice varchar(10), CodiceSessione varchar(10))
@@ -731,7 +760,7 @@ END
     END
 | delimiter ;
 
-# Stored procedure --> elimina info aggiuntive
+# Stored procedure 34 --> elimina info aggiuntive
  start transaction;
  delimiter |
  CREATE PROCEDURE EliminaInfoAggiuntive(UsernameSpeaker varchar(30), CodiceTutorial varchar(10), CodiceSessioneTutorial varchar(10))
@@ -765,14 +794,13 @@ DROP TRIGGER IF EXISTS CambiaStatoSvolgimento;
 #NON FUNZIONANTE
 # trigger 2 : setta stato svolgimento a "Coperto" quando viene associato un Presenter ad un Articolo
 delimiter |
-CREATE TRIGGER CambiaStatoSvolgimento
-		 AFTER UPDATE ON ARTICOLO
+CREATE TRIGGER CambiaStatoSvolgimento BEFORE INSERT ON ARTICOLO
   FOR EACH ROW
-		 BEGIN
-				UPDATE ARTICOLO
-				   SET ARTICOLO.StatoSvolgimento = "Coperto"
-				 WHERE UsernamePresenter is not null;
-		   END;
+  BEGIN
+				 #UPDATE ARTICOLO
+				   SET NEW.StatoSvolgimento = "Coperto";
+				 #WHERE UsernamePresenter is not null;
+  END
 | delimiter ;
 
 
@@ -842,9 +870,29 @@ CREATE VIEW SpeakerVotoMed(UsernameSpeaker, VotoMed) AS
 	GROUP BY SPEAKER.UsernameUtente
     ORDER BY VotoMed DESC
 | delimiter ;
-/********************************************************************************************************************************/ 
- 
 
+
+delimiter |
+CREATE VIEW VisualizzaSessioni (CodiceSessione,IdProgramma,LinkTeams,NumPresentazioni,OraFineSessione,OraIniSessione,Titolo) AS
+SELECT Codice as CodiceSessione,IdProgramma,LinkTeams,NumPresentazioni,OraFine as OraFineSessione,OraIni as OraIniSessione,Titolo
+FROM SESSIONE
+| delimiter;
+/********************************************************************************************************************************/ 
+ delimiter |
+ CREATE VIEW VisualizzaPresentazioni (CodicePresentazione,NumSequenza,CodiceSessionePr,OraFinePresentazione,OraIniPresentazione) AS
+ SELECT Codice as CodicePresentazione,NumSequenza,CodiceSessione as CodiceSessionePr, OraFine as OraFinePresentazione, OraIni as OraIniPresentazione
+ FROM PRESENTAZIONE
+ | delimiter;
+/********************************************************************************************************************************/ 
+-- View 6 | Visualizzare le Sessioni e le presentazioni di ogni sessione
+delimiter |
+CREATE VIEW VisualizzaPresentazioniSessioni(CodiceSessione,IdProgramma,LinkTeams,NumPresentazioni,OraFineSessione,OraIniSessione,Titolo,CodicePresentazione,NumSequenza,OraFinePresentazione,OraIniPresentazione) AS
+SELECT CodiceSessione,IdProgramma,LinkTeams,NumPresentazioni,OraFineSessione,OraIniSessione,Titolo,CodicePresentazione,NumSequenza,OraFinePresentazione,OraIniPresentazione
+FROM VisualizzaPresentazioni,VisualizzaSessioni
+WHERE CodiceSessione=CodiceSessionePr
+GROUP BY (CodiceSessione)
+| delimiter;
+/********************************************************************************************************************************/ 
 # evento 1: setta svolgimento della conferenza a "Completata" dopo la scadenza
 delimiter |
 CREATE EVENT ModificaSvolgimento

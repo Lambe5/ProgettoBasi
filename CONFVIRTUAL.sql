@@ -266,6 +266,19 @@ INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita
 values ("ZurgP", "123", "Zurg", "Toy", "Bologna", "2000-10-10");
 INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
 values ("ZurgSp", "123", "Zurg", "Toy", "Bologna", "2000-10-10");
+INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
+values ("CarloAm", "abc", "Carlo", "Amato", "Bologna", "2000-01-20");
+INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
+values ("Speaker1", "1234", "Sp", "eaker1", "Bologna", "2000-01-20");
+INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
+values ("Speaker2", "12", "Sp", "eaker2", "Napoli", "2000-10-20");
+INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
+values ("Presenter1", "126", "Pr", "es", "Napoli", "2000-10-20");
+INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
+values ("Presenter2", "126", "Pr", "es", "Napoli", "2000-10-20");
+INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
+values ("Aut", "0", "Pr", "es", "Napoli", "2000-10-20");
+
 
 INSERT INTO PROGRAMMA_GIORNALIERO (Id, AcronimoConferenza, AnnoEdizioneConferenza, Data)
 values ("007","Acronimo1",2022,"2022-08-15");
@@ -282,6 +295,12 @@ INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo)
 values ("A125", "009", "link1", "11:00", "9:00", "titolo1");
 INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) 
 values ("A200", "007", "link2", "11:00", "9:00", "titolo2");
+INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) 
+values ("A1", "007", "link2", "11:00", "9:00", "titolo2");
+INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) 
+values ("A2", "007", "link2", "11:00", "9:00", "titolo2");
+INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) 
+values ("B1", "006", "link2", "11:00", "9:00", "titolo2");
 
 INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) 
 values ("P125", "A123", 3, "11:00", "9:00"); 
@@ -289,32 +308,93 @@ INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni)
 values ("P126", "A123", 3, "11:00", "9:00"); 
 INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) 
 values ("P127", "A124", 3, "11:00", "9:00"); 
+INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) 
+values ("P1", "A1", 3, "11:00", "9:00"); 
+INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) 
+values ("P2", "A2", 3, "11:00", "9:00"); 
+INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) 
+values ("A1", "B1", 3, "11:00", "9:00");
+INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) 
+values ("A2", "B1", 3, "11:00", "9:00"); 
+INSERT INTO PRESENTAZIONE (Codice, CodiceSessione, NumSequenza, OraFine, OraIni) 
+values ("A3", "B1", 3, "11:00", "9:00"); 
 
 INSERT INTO PRESENTER (UsernameUtente, NomeUni, NomeDip, CV, Foto)
 values ("ZicP", "Unibo", "InfoMan", "CV1", "Foto1");
 INSERT INTO PRESENTER (UsernameUtente, NomeUni, NomeDip, CV, Foto)
 values ("ZurgP", "Unibo", "InfoMan", "CV2", "Foto2");
+INSERT INTO PRESENTER (UsernameUtente, NomeUni, NomeDip, CV, Foto)
+values ("Presenter1", "RomaUNI", "InfoMan", "CV2", "Foto2");
+INSERT INTO PRESENTER (UsernameUtente, NomeUni, NomeDip, CV, Foto)
+values ("Presenter2", "Unibo", "InfoMan", "CV2", "Foto2");
 
 INSERT INTO ARTICOLO (CodicePresentazione, CodiceSessionePresentazione, NumPagine, filePDF, Titolo, UsernamePresenter)
 values ("P125", "A123", 20, "file.pdf", "Titolo1", "ZicP");
 INSERT INTO ARTICOLO (CodicePresentazione, CodiceSessionePresentazione, NumPagine, filePDF, Titolo, UsernamePresenter)
 values ("P127", "A124", 20, "file.pdf", "Titolo1", "ZurgP");
+INSERT INTO ARTICOLO (CodicePresentazione, CodiceSessionePresentazione, NumPagine, filePDF, Titolo, UsernamePresenter)
+values ("A1", "B1", 10, "file.pdf", "Titolo1", "Presenter1");
+INSERT INTO ARTICOLO (CodicePresentazione, CodiceSessionePresentazione, NumPagine, filePDF, Titolo, UsernamePresenter)
+values ("A2", "B1", 10, "file.pdf", "Titolo1", "Presenter1");
+INSERT INTO ARTICOLO (CodicePresentazione, CodiceSessionePresentazione, NumPagine, filePDF, Titolo, UsernamePresenter)
+values ("A3", "B1", 10, "file.pdf", "Titolo1", "Presenter2");
 
 
 INSERT INTO AMMINISTRATORE (UsernameUtente)
 values ("CiccioSp");
 
+INSERT INTO AMMINISTRATORE (UsernameUtente)
+values ("CarloAm");
+
 INSERT INTO VALUTAZIONE (UsernameAmministratore, CodicePresentazione, CodiceSessionePresentazione, Voto, Note)
 values ("CiccioSp", "P125", "A123", 7, "note");
 INSERT INTO VALUTAZIONE (UsernameAmministratore, CodicePresentazione, CodiceSessionePresentazione, Voto, Note)
+values ("CarloAm", "P125", "A123", 5, "note");
+INSERT INTO VALUTAZIONE (UsernameAmministratore, CodicePresentazione, CodiceSessionePresentazione, Voto, Note)
 values ("CiccioSp", "P127", "A124", 9, "note");
+INSERT INTO VALUTAZIONE (UsernameAmministratore, CodicePresentazione, CodiceSessionePresentazione, Voto, Note)
+values ("CiccioSp", "P1", "A1", 7, "buono");
+INSERT INTO VALUTAZIONE (UsernameAmministratore, CodicePresentazione, CodiceSessionePresentazione, Voto, Note)
+values ("CiccioSp", "A1", "B1", 6, "note");
 
+INSERT INTO VALUTAZIONE (UsernameAmministratore, CodicePresentazione, CodiceSessionePresentazione, Voto, Note)
+values ("CarloAm", "P1", "A1", 9, "nice");
+INSERT INTO VALUTAZIONE (UsernameAmministratore, CodicePresentazione, CodiceSessionePresentazione, Voto, Note)
+values ("CarloAm", "P2", "A2", 6, "mmmmh");
+INSERT INTO VALUTAZIONE (UsernameAmministratore, CodicePresentazione, CodiceSessionePresentazione, Voto, Note)
+values ("CarloAm", "A1", "B1", 4, "note");
+INSERT INTO VALUTAZIONE (UsernameAmministratore, CodicePresentazione, CodiceSessionePresentazione, Voto, Note)
+values ("CarloAm", "A2", "B1", 7, "note");
+INSERT INTO VALUTAZIONE (UsernameAmministratore, CodicePresentazione, CodiceSessionePresentazione, Voto, Note)
+values ("CarloAm", "A3", "B1", 6, "note");
+
+
+
+-- INSERT INTO SPEAKER (UsernameUtente, NomeUni, NomeDip, CV, Foto) 
+-- values ("CiccioSp", "Unibo", "Informatica", "Sono bravo a esporre", "imgCiccio");
 INSERT INTO SPEAKER (UsernameUtente, NomeUni, NomeDip, CV, Foto) 
-values ("CiccioSp", "Unibo", "Informatica", "Sono bravo a esporre", "imgCiccio");
+values ("Speaker1", "Unibo", "Informatica", "Sono bravo", "bldla");
+INSERT INTO SPEAKER (UsernameUtente, NomeUni, NomeDip, CV, Foto) 
+values ("Speaker2", "Unibo", "Mate", "Sono calvo", "xnreo");
 
 
 INSERT INTO TUTORIAL (CodicePresentazione, CodiceSessionePresentazione, Titolo, Abstract) 
 values ("P125", "A123", "Come fare schifo", "hwqvouq");
+
+INSERT INTO TUTORIAL (CodicePresentazione, CodiceSessionePresentazione, Titolo, Abstract) 
+values ("P1", "A1", "Come fare schifo", "hwqvouq");
+INSERT INTO TUTORIAL (CodicePresentazione, CodiceSessionePresentazione, Titolo, Abstract) 
+values ("P2", "A2", "Come fare la pasta", "ccca");
+
+-- INSERT INTO presentazione_tutorial (UsernameSpeaker,CodiceTutorial,CodiceSessioneTutorial) 
+-- values ("CiccioSp","P125","A123");
+
+INSERT INTO presentazione_tutorial (UsernameSpeaker,CodiceTutorial,CodiceSessioneTutorial) 
+values ("Speaker1","P1","A1");
+INSERT INTO presentazione_tutorial (UsernameSpeaker,CodiceTutorial,CodiceSessioneTutorial) 
+values ("Speaker1","P2","A2");
+INSERT INTO presentazione_tutorial (UsernameSpeaker,CodiceTutorial,CodiceSessioneTutorial) 
+values ("Speaker2","P2","A2");
 
 
 -- INSERT INTO ARTICOLO(CodicePresentazione,CodiceSessionePresentazione,Numpagine,filePDF,Titolo,StatoSvolgimento,UsernamePresenter) 
@@ -322,8 +402,8 @@ values ("P125", "A123", "Come fare schifo", "hwqvouq");
 
 -- UPDATE ARTICOLO SET UsernamePresenter='CiccioSp' WHERE CodicePresentazione='P128';
 
-INSERT INTO INFO_AGGIUNTIVE (UsernameSpeaker, CodiceTutorial, CodiceSessioneTutorial, LinkWeb, Descrizione) 
-values ("CiccioSp", "P125", "A123", "link1", "descrizione1");
+-- INSERT INTO INFO_AGGIUNTIVE (UsernameSpeaker, CodiceTutorial, CodiceSessioneTutorial, LinkWeb, Descrizione) 
+-- values ("CiccioSp", "P125", "A123", "link1", "descrizione1");
 
 
 
@@ -836,7 +916,7 @@ CREATE VIEW SessioniPresenti(Codice, IdProgramma, LinkTeams, OraFine, OraIni, Ti
 	 FROM SESSIONE
 | delimiter ;
 
-#View che restituisce il numero tot delle conferenze registrate (in tutta la piattaforma)
+#View 5 | che restituisce il numero tot delle conferenze registrate (in tutta la piattaforma)
 delimiter |
 CREATE VIEW NumConferenzeRegistrate(TotConferenze) AS
 	 SELECT count(*)
@@ -844,34 +924,58 @@ CREATE VIEW NumConferenzeRegistrate(TotConferenze) AS
 | delimiter ;
 
 # TESTARE
-#View che restituisce lista presenters in base al voto medio in modo discendente
-delimiter |
-CREATE VIEW PresenterVotoMed(UsernamePresenter, VotoMed) AS
-	 SELECT PRESENTER.UsernameUtente, AVG(VALUTAZIONE.Voto) AS VotoMed
-	 FROM PRESENTER, VALUTAZIONE, ARTICOLO
-     WHERE (PRESENTER.UsernameUtente = ARTICOLO.UsernamePresenter) AND
-		   (ARTICOLO.CodicePresentazione = VALUTAZIONE.CodicePresentazione) AND
-           (ARTICOLO.CodiceSessionePresentazione = VALUTAZIONE.CodiceSessionePresentazione)# AND
-           #(ARTICOLO.UsernamePresenter = PRESENTER.UsernameUtente) vedi se serve doppio controllo o no
-	GROUP BY PRESENTER.UsernameUtente
-    ORDER BY VotoMed DESC
-| delimiter ;
+#View -> che restituisce lista presenters in base al voto medio in modo discendente
+# Se volessimo vedere nella classifica anche i presenter che non hanno nessun voto associato??????????????????????????????????????????????????????????
+-- delimiter |
+-- CREATE VIEW PresenterVotoMed(UsernamePresenter, VotoMed,Tipo) AS
+-- 	 SELECT PRESENTER.UsernameUtente, AVG(VALUTAZIONE.Voto) AS VotoMed,
+--       CASE WHEN UsernameUtente is not null THEN "Presenter" END AS TipoUtente
+-- 	 FROM PRESENTER, VALUTAZIONE, ARTICOLO
+--      WHERE (PRESENTER.UsernameUtente = ARTICOLO.UsernamePresenter) AND
+-- 		   (ARTICOLO.CodicePresentazione = VALUTAZIONE.CodicePresentazione) AND
+--            (ARTICOLO.CodiceSessionePresentazione = VALUTAZIONE.CodiceSessionePresentazione) # AND
+--            #(ARTICOLO.UsernamePresenter = PRESENTER.UsernameUtente) vedi se serve doppio controllo o no
+-- 	GROUP BY PRESENTER.UsernameUtente
+--     ORDER BY VotoMed DESC
+-- | delimiter ;
 
-# TESTARE
-#View che restituisce lista speaker in base al voto medio in modo discendente
+#View -> che restituisce lista speaker in base al voto medio in modo discendente
+# TO-DO
+# Se volessimo vedere nella classifica anche gli speaker che non hanno nessun voto associato??????????????????????????????????????????????????????????
+-- delimiter |
+-- CREATE VIEW SpeakerVotoMed(UsernameSpeaker, VotoMed ,Tipo) AS
+-- 	 SELECT SPEAKER.UsernameUtente, AVG(VALUTAZIONE.Voto) AS VotoMed,
+--      CASE WHEN UsernameUtente is not null THEN "Speaker" END AS TipoUtente
+-- 	 FROM SPEAKER, VALUTAZIONE, PRESENTAZIONE_TUTORIAL
+--      WHERE (SPEAKER.UsernameUtente = PRESENTAZIONE_TUTORIAL.UsernameSpeaker) AND
+-- 		   (PRESENTAZIONE_TUTORIAL.CodiceTutorial = VALUTAZIONE.CodicePresentazione) AND
+--            (PRESENTAZIONE_TUTORIAL.CodiceSessioneTutorial = VALUTAZIONE.CodiceSessionePresentazione) #AND
+--            #(PRESENTAZIONE_TUTORIAL.UsernameSpeaker = SPEAKER.UsernameUtente) vedi se serve doppio controllo o no
+-- 	GROUP BY SPEAKER.UsernameUtente
+--     ORDER BY VotoMed DESC
+-- | delimiter ;
+
+
+#View 6 | Visualizza i presenter/speaker sulla base del voto medio
 delimiter |
-CREATE VIEW SpeakerVotoMed(UsernameSpeaker, VotoMed) AS
-	 SELECT SPEAKER.UsernameUtente, AVG(VALUTAZIONE.Voto) AS VotoMed
-	 FROM SPEAKER, VALUTAZIONE, PRESENTAZIONE_TUTORIAL
-     WHERE (SPEAKER.UsernameUtente = PRESENTAZIONE_TUTORIAL.UsernameSpeaker) AND
+CREATE VIEW presenter_speaker_votomedio(Username,VotoMed,Tipo) AS
+	 SELECT Utente.Username, AVG(VALUTAZIONE.Voto) AS VotoMed,
+     CASE WHEN Utente.Username=Speaker.UsernameUtente THEN "Speaker" 
+     ELSE "Presenter" END as TipoUtente
+     FROM Utente,Speaker,Presenter,Valutazione,presentazione_tutorial,Articolo
+     WHERE ((Utente.Username=Speaker.UsernameUtente) AND (SPEAKER.UsernameUtente = PRESENTAZIONE_TUTORIAL.UsernameSpeaker) AND
 		   (PRESENTAZIONE_TUTORIAL.CodiceTutorial = VALUTAZIONE.CodicePresentazione) AND
-           (PRESENTAZIONE_TUTORIAL.CodiceSessioneTutorial = VALUTAZIONE.CodiceSessionePresentazione) #AND
-           #(PRESENTAZIONE_TUTORIAL.UsernameSpeaker = SPEAKER.UsernameUtente) vedi se serve doppio controllo o no
-	GROUP BY SPEAKER.UsernameUtente
-    ORDER BY VotoMed DESC
-| delimiter ;
-
-
+           (PRESENTAZIONE_TUTORIAL.CodiceSessioneTutorial = VALUTAZIONE.CodiceSessionePresentazione)) # Caso in cui è uno Speaker
+           OR 
+           ((Utente.Username=Presenter.UsernameUtente) AND (PRESENTER.UsernameUtente = ARTICOLO.UsernamePresenter) AND
+		   (ARTICOLO.CodicePresentazione = VALUTAZIONE.CodicePresentazione) AND
+           (ARTICOLO.CodiceSessionePresentazione = VALUTAZIONE.CodiceSessionePresentazione)) # Caso in cui è uno Presenter
+           group by (Username)
+		   ORDER BY VotoMed DESC;
+           
+           
+| delimiter;
+#View 7 |
 delimiter |
 CREATE VIEW VisualizzaSessioni (CodiceSessione,IdProgramma,LinkTeams,NumPresentazioni,OraFineSessione,OraIniSessione,Titolo) AS
 SELECT Codice as CodiceSessione,IdProgramma,LinkTeams,NumPresentazioni,OraFine as OraFineSessione,OraIni as OraIniSessione,Titolo
@@ -900,5 +1004,6 @@ ON SCHEDULE EVERY 24 HOUR
 DO
 	UPDATE CONFERENZA, PROGRAMMA_GIORNALIERO
 	   SET CONFERENZA.Svolgimento = "Completata"
-	 WHERE now() >= PROGRAMMA_GIORNALIERO.Data;
+       #PRIMA era >=, ma nella richiesta è che sia "passato un giorno" quindi solo >
+	 WHERE now() > PROGRAMMA_GIORNALIERO.Data;
 | delimiter ;

@@ -72,7 +72,7 @@ CREATE TABLE SPONSORIZZAZIONE(
 		foreign key(NomeSponsor) references SPONSOR(Nome) on delete cascade
         
 ) ENGINE = INNODB;
- 
+ # Permette di inserire un ACRONIMO anche se non presente nella conferenza
 CREATE TABLE PROGRAMMA_GIORNALIERO(
 		Id varchar(10), 
 		AcronimoConferenza varchar(30) references CONFERENZA(Acronimo) on delete cascade,
@@ -251,13 +251,18 @@ CREATE TABLE PRESENTAZIONE_TUTORIAL(
 
 #insert di prova per testare la creazione di una sessione
 
-INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome)
-values ("Acronimo1",2022,"img1","Conferenza1");
+INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome,Svolgimento)
+values ("Acronimo1",2022,"img1","Conferenza1","Attiva");
 INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome)
 values ("Acronimo2",2022,"img1","Conferenza2");
 INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome)
 values ("Acronimo3",2022,"img1","Conferenza3");
- 
+
+INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome,Svolgimento)
+values ("AcronimoEvento",2022,"img1","Conferenza1","Attiva");
+ INSERT INTO PROGRAMMA_GIORNALIERO (Id, AcronimoConferenza, AnnoEdizioneConferenza, Data)
+values ("010","AcronimoEvento",2022,"2022-08-12");
+
 INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
 values ("CiccioSp", "123", "Ciccio", "Pasticcio", "Bologna", "2000-10-10");
 INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
@@ -281,7 +286,7 @@ values ("Aut", "0", "Pr", "es", "Napoli", "2000-10-20");
 
 
 INSERT INTO PROGRAMMA_GIORNALIERO (Id, AcronimoConferenza, AnnoEdizioneConferenza, Data)
-values ("007","Acronimo1",2022,"2022-08-15");
+values ("007","Acronimo1",2022,"2022-08-12");
 INSERT INTO PROGRAMMA_GIORNALIERO (Id, AcronimoConferenza, AnnoEdizioneConferenza, Data)
 values ("008","Acronimo2",2022,"2022-08-15");
 INSERT INTO PROGRAMMA_GIORNALIERO (Id, AcronimoConferenza, AnnoEdizioneConferenza, Data)
@@ -396,6 +401,8 @@ values ("Speaker1","P2","A2");
 INSERT INTO presentazione_tutorial (UsernameSpeaker,CodiceTutorial,CodiceSessioneTutorial) 
 values ("Speaker2","P2","A2");
 
+INSERT INTO programma_giornaliero(Id,AcronimoConferenza,AnnoEdizioneConferenza,Data)
+VALUES ("001","Acronimo5","2022","2022-08-12");
 
 -- INSERT INTO ARTICOLO(CodicePresentazione,CodiceSessionePresentazione,Numpagine,filePDF,Titolo,StatoSvolgimento,UsernamePresenter) 
 -- values ("P128","A125",150,"meme1","Essere o non essere?","NonCoperto",null);
@@ -997,6 +1004,7 @@ WHERE CodiceSessione=CodiceSessionePr
 GROUP BY (CodiceSessione)
 | delimiter;
 /********************************************************************************************************************************/ 
+
 # evento 1: setta svolgimento della conferenza a "Completata" dopo la scadenza
 delimiter |
 CREATE EVENT ModificaSvolgimento

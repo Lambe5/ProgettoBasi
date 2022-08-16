@@ -876,9 +876,8 @@ CREATE TRIGGER AggiornaNumeroPresentazioni
 | delimiter ;
 /********************************************************************************************************************************/ 
 
-#DA TESTARE
+
 DROP TRIGGER IF EXISTS CambiaStatoSvolgimento;
-#NON FUNZIONANTE
 # trigger 2 : setta stato svolgimento a "Coperto" quando viene associato un Presenter ad un Articolo
 delimiter |
 CREATE TRIGGER CambiaStatoSvolgimento BEFORE INSERT ON ARTICOLO

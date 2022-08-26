@@ -257,6 +257,12 @@ INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome)
 values ("Acronimo2",2022,"img1","Conferenza2");
 INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome)
 values ("Acronimo3",2022,"img1","Conferenza3");
+INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome)
+values ("Acronimo4",2022,"img1","Conferenza4");
+INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome)
+values ("Acronimo5",2022,"img1","Conferenza5");
+INSERT INTO CONFERENZA (Acronimo, AnnoEdizione, ImgLogo, Nome)
+values ("Acronimo6",2022,"img1","Conferenza6");
  
 INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita) 
 values ("CiccioSp", "123", "Ciccio", "Pasticcio", "Bologna", "2000-10-10");
@@ -268,11 +274,11 @@ INSERT INTO UTENTE (Username, Password, Nome, Cognome, LuogoNascita, DataNascita
 values ("ZurgSp", "123", "Zurg", "Toy", "Bologna", "2000-10-10");
 
 INSERT INTO PROGRAMMA_GIORNALIERO (Id, AcronimoConferenza, AnnoEdizioneConferenza, Data)
-values ("007","Acronimo1",2022,"2022-08-15");
+values ("007","Acronimo1",2022,"2022-08-30");
 INSERT INTO PROGRAMMA_GIORNALIERO (Id, AcronimoConferenza, AnnoEdizioneConferenza, Data)
-values ("008","Acronimo2",2022,"2022-08-15");
+values ("008","Acronimo2",2022,"2022-08-30");
 INSERT INTO PROGRAMMA_GIORNALIERO (Id, AcronimoConferenza, AnnoEdizioneConferenza, Data)
-values ("009","Acronimo3",2022,"2022-08-15");
+values ("009","Acronimo3",2022,"2022-08-30");
 
 INSERT INTO SESSIONE (Codice, IdProgramma, LinkTeams, OraFine, OraIni, Titolo) 
 values ("A123", "007", "link1", "11:00", "9:00", "titolo1");
@@ -316,16 +322,34 @@ values ("CiccioSp", "Unibo", "Informatica", "Sono bravo a esporre", "imgCiccio")
 INSERT INTO TUTORIAL (CodicePresentazione, CodiceSessionePresentazione, Titolo, Abstract) 
 values ("P125", "A123", "Come fare schifo", "hwqvouq");
 
+INSERT INTO LISTA_PRESENTAZIONI_FAVORITE (UsernameUtente, CodicePresentazione, CodiceSessionePresentazione) 
+values ("ZicP", "P125", "A123");
+
+INSERT INTO LISTA_PRESENTAZIONI_FAVORITE (UsernameUtente, CodicePresentazione, CodiceSessionePresentazione) 
+values ("CiccioSp", "P125", "A123");
+
+INSERT INTO LISTA_PRESENTAZIONI_FAVORITE (UsernameUtente, CodicePresentazione, CodiceSessionePresentazione) 
+values ("CiccioSp", "P127", "A124");
+
 
 -- INSERT INTO ARTICOLO(CodicePresentazione,CodiceSessionePresentazione,Numpagine,filePDF,Titolo,StatoSvolgimento,UsernamePresenter) 
 -- values ("P128","A125",150,"meme1","Essere o non essere?","NonCoperto",null);
 
 -- UPDATE ARTICOLO SET UsernamePresenter='CiccioSp' WHERE CodicePresentazione='P128';
 
-INSERT INTO INFO_AGGIUNTIVE (UsernameSpeaker, CodiceTutorial, CodiceSessioneTutorial, LinkWeb, Descrizione) 
-values ("CiccioSp", "P125", "A123", "link1", "descrizione1");
+INSERT INTO REGISTRAZIONE (UsernameUtente, AcronimoConferenza, AnnoEdizioneConferenza)
+values ("CiccioSp", "Acronimo1", 2022);	
+INSERT INTO REGISTRAZIONE (UsernameUtente, AcronimoConferenza, AnnoEdizioneConferenza)
+values ("CiccioSp", "Acronimo4", 2022);
+INSERT INTO REGISTRAZIONE (UsernameUtente, AcronimoConferenza, AnnoEdizioneConferenza)
+values ("CiccioSp", "Acronimo6", 2022);										
 
+/*SELECT Acronimo, AnnoEdizione
+FROM CONFERENZA
+WHERE Acronimo <> ALL (SELECT AcronimoConferenza FROM REGISTRAZIONE) AND (Svolgimento = "Attiva");*/
 
+SELECT Codice, CodiceSessione FROM PRESENTAZIONE WHERE NOT EXISTS (SELECT * FROM LISTA_PRESENTAZIONI_FAVORITE WHERE
+(Codice = CodicePresentazione) AND (CodiceSessione = CodiceSessionePresentazione) AND (UsernameUtente = "ZicP"));
 
 #Lista stored procedure
 /********************************************************************************************************************************/
@@ -600,7 +624,7 @@ CREATE PROCEDURE AssociaSpeaker(UsernameSpeaker varchar(30), CodiceTutorial varc
  delimiter |
  CREATE PROCEDURE RegistrazioneConferenza(UsernameUtente varchar(30), AcronimoConferenza varchar(30), AnnoEdizioneConferenza YEAR)
 	BEGIN
-    INSERT INTO REGISTRAZIONE 
+    INSERT INTO REGISTRAZIONE
     SET UsernameUtente = UsernameUtente, AcronimoConferenza = AcronimoConferenza, AnnoEdizioneConferenza = AnnoEdizioneConferenza;
     COMMIT;
     END
@@ -890,13 +914,13 @@ CREATE VIEW VisualizzaPresentazioniSessioni(CodiceSessione,IdProgramma,LinkTeams
 SELECT CodiceSessione,IdProgramma,LinkTeams,NumPresentazioni,OraFineSessione,OraIniSessione,Titolo,CodicePresentazione,NumSequenza,OraFinePresentazione,OraIniPresentazione
 FROM VisualizzaPresentazioni,VisualizzaSessioni
 WHERE CodiceSessione=CodiceSessionePr
-GROUP BY (CodiceSessione)
+#GROUP BY (CodiceSessione)
 | delimiter;
 /********************************************************************************************************************************/ 
 # evento 1: setta svolgimento della conferenza a "Completata" dopo la scadenza
 delimiter |
 CREATE EVENT ModificaSvolgimento
-ON SCHEDULE EVERY 24 HOUR
+ON SCHEDULE EVERY 48 HOUR
 DO
 	UPDATE CONFERENZA, PROGRAMMA_GIORNALIERO
 	   SET CONFERENZA.Svolgimento = "Completata"
